@@ -1,0 +1,47 @@
+$icon-font-path:"~bootstrap-sass/assets/fonts/bootstrap/";
+
+$text-color:#616161;
+$link-color:$text-color;
+
+$brand-primary: $text-color;
+$btn-primary-color:whitesmoke;
+$brand-default: white;
+$btn-default-color:$text-color;
+
+@import "~bootstrap-sass/assets/stylesheets/_bootstrap.scss";
+
+body{
+  background-color: #f2f2f2;
+}
+li {
+  list-style-type: none;
+}
+#aside{
+  position: fixed;
+  z-index:9999;
+  top:0;
+  left:0;
+  width:100px;
+  height: 100%;
+  padding: 0;
+  background-color: $brand-primary;
+  text-align: center;
+}
+#aside-logo{
+  margin: 50px auto;
+  width: 30%;
+}
+#aside li a{
+  padding-top: 20px;
+  padding-bottom: 20px;
+  color:$btn-primary-color;
+}
+#aside li a:hover{
+  color:$brand-primary;
+}
+#main{
+  padding-left: 100px;
+}
+.body{
+  padding: 0 30px;
+}
