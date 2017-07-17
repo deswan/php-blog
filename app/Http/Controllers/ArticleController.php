@@ -18,49 +18,35 @@ class ArticleController extends Controller
         return view('admin.article_manage',compact('articles'));
     }
 
-    public function validateTitle(Request $r){
-        Log::debug('App\Article::find($r->title)');
-        $this->validate($r,['title'=>'required|unique:articles,title']);
-        return response()->json([]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return view('admin.write');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    //新建
     public function store(Request $request)
     {
         $this->validate($request,[
-            'title'=>'required|filled|max:20',
-            'category'=>'required|filled|exists:categories,id',
-            'short'=>'required|filled|max:50',
-            'text'=>'required|filled',
-            'draft'=>'required|boolean'
+            'title'=>'required|filled|max:50',
+            'coding_tags'=>'filled|array',
+            'essay_tags'=>'filled|array',
+            'outline'=>'required|filled|max:100',
+            'body'=>'required|filled'
         ]);
-        if(!$request->draft){   //发表
-            $article = App\Article::create([
-                'title'=>$request->title,
-                'text'=>$request->text,
-                'short'=>$request->short,
-                'draft'=>$request->draft
-            ]);
-            foreach($request->category as $cid){
-                $article->categories()->attach($cid);
-            }
-        }
-        return back();
+        $article = null;
+        DB::transaction(function () {
+          $article = new App\Article;
+          $article->title = $request->input('title');
+          $article->outline = $request->input('outline');
+          $article->body = $request->input('body');
+
+          if($request->input('coding_tags')){
+            $tags = $request->input('coding_tags')
+            $article->type = 0;
+          }else{
+            $tags = $request->input('essay_tags')
+            $article->type = 1;
+          }
+          foreach($tags as $tag_id){
+            $article->categories()->attach($tag_id);
+          }
+        });
+        return response()->json('');
     }
 
     /**
@@ -85,16 +71,35 @@ class ArticleController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    //更新
     public function update(Request $request, $id)
     {
-        //
+      $this->validate($request,[
+          'title'=>'required|filled|max:50',
+          'coding_tags'=>'filled|array',
+          'essay_tags'=>'filled|array',
+          'outline'=>'required|filled|max:100',
+          'body'=>'required|filled'
+      ]);
+      $article = null;
+      DB::transaction(function () {
+        $article = App\Article::find($id);
+        $article->title = $request->input('title');
+        $article->outline = $request->input('outline');
+        $article->body = $request->input('body');
+
+        if($request->input('coding_tags')){
+          $tags = $request->input('coding_tags')
+          $article->type = 0;
+        }else{
+          $tags = $request->input('essay_tags')
+          $article->type = 1;
+        }
+        foreach($tags as $tag_id){
+          $article->categories()->attach($tag_id);
+        }
+      });
+      return response()->json('');
     }
 
     /**

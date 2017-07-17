@@ -6,5 +6,6 @@
   "/js/index.js": "/js/index.js",
   "/js/write.js": "/js/write.js",
   "/js/category.js": "/js/category.js",
-  "/js/article.js": "/js/article.js"
+  "/js/article.js": "/js/article.js",
+  "/js/admin.js": "/js/admin.js"
 }

@@ -3,26 +3,24 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App;
 use Log;
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        return view('admin.category_manage');
-    }
-
-    public function data()
-    {
-        $coding = App\Category::where('type',1)->orderBy('created_at')->get();
-        $essay = App\Category::where('type',2)->orderBy('created_at')->get();
+    public function index(){
+        $result = \App\Category::orderBy('created_at')->get();
+        foreach($result as $val){
+          if($val['type']===0){
+            $coding[]=$val;
+          }else if($val['type']===1){
+            $essay[]=$val;
+          }
+          unset($val['created_at']);
+          unset($val['updated_at']);
+          unset($val['type']);
+        }
         return response()->json(compact('coding','essay'));
     }
+
     public function validateName(Request $r){
         $this->validate($r,[
             'name' => 'required|unique:categories',

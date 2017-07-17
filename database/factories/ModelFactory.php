@@ -22,3 +22,22 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
         'remember_token' => str_random(10),
     ];
 });
+$factory->define(App\VisitFlow::class, function (Faker\Generator $faker) {
+    return [
+        'time' => $faker->dateTimeThisYear($max = 'now', $timezone = date_default_timezone_get())
+    ];
+});
+$factory->define(App\Article::class, function (Faker\Generator $faker) {
+    return [
+        'title'=>$faker->title,
+        'body'=>$faker->text($maxNbChars = 200) ,
+        'if_draft'=>$faker->randomElement($array = [0,1]),
+        'outline'=>$faker->sentence($nbWords = 6, $variableNbWords = true)
+    ];
+});
+$factory->define(App\Category::class, function (Faker\Generator $faker) {
+    return [
+        'name'=>$faker->name,
+        'type'=>$faker->randomElement($array = [0,1])
+    ];
+});

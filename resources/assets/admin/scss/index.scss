@@ -9,7 +9,9 @@ $brand-default: white;
 $btn-default-color:$text-color;
 
 @import "~bootstrap-sass/assets/stylesheets/_bootstrap.scss";
-
+a:hover{
+  cursor: pointer;
+}
 body{
   background-color: #f2f2f2;
 }
@@ -44,4 +46,15 @@ li {
 }
 .body{
   padding: 0 30px;
+}
+.transition-success{
+  animation:transition-success 2s ease;
+}
+@keyframes transition-success {
+  50%{
+    background-color: $brand-success;
+  }
+}
+.btn:focus, .btn.focus, .btn:active:focus, .btn:active.focus, .btn.active:focus, .btn.active.focus {
+    outline:none;
 }
