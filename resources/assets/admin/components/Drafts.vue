@@ -10,16 +10,17 @@
           </thead>
 
           <tbody>
-          <tr v-for="article in articles">
-              <td>{{article.time}}</td>
-              <td>{{article.title}}</td>
+          <tr v-for="draft in drafts">
+              <td>{{draft.updated_at}}</td>
+              <td>{{draft.title}}</td>
               <td>
-                  <a class="btn btn-warning" href="#" role="button">删除</a>
-                  <a class="btn btn-danger" href="#" role="button">编辑</a>
+                <router-link :to="'/drafts/'+draft.id+'/edit'" class="btn btn-warning" href="#" role="button">编辑</router-link>
+                  <button class="btn btn-danger" @click="del(draft)">删除</button>
               </td>
           </tr>
           </tbody>
       </table>
+      <pop-model :arg="arg" @confirm="del$1" ref="modal" confirm-btn-text="删除">确定删除 {{arg.title}} 草稿吗？</pop-model>
   </div>
 </template>
 
@@ -27,18 +28,25 @@
 export default {
   data(){
     return{
-      articles:[
-        {
-          time:'2016/11/11',
-          title:'asdsdaasddas',
-          tag:['asd','sda','sdadsa']
-        },
-        {
-          time:'2016/11/11',
-          title:'asdsdaasddas',
-          tag:['asd','sda','sdadsa']
-        }
-      ]
+      arg:null,
+      drafts:[]
+    }
+  },
+  created(){
+    this.$http.get('admin/drafts').then(response => {
+      this.drafts = response.body;
+    })
+  },
+  methods:{
+    del$1(draft){
+      this.$http.post('admin/drafts/'+draft.id+'/delete').then(response => {
+        this.drafts.splice(this.drafts.indexOf(draft),1);
+        this.$refs.modal.hide();
+      })
+    },
+    del(draft){
+      this.arg = draft;
+      this.$refs.modal.show();
     }
   }
 }

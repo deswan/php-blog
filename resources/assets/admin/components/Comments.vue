@@ -1,5 +1,5 @@
 <template>
-<div id="comments" class="body">
+<div id="comments" :class="{body:!isComponent}">
   <div class="panel panel-default">
     <div class="panel-body">
       <div class="container-fluid">
@@ -35,6 +35,15 @@
 
 <script>
 export default {
+  props:{
+    isComponent:{
+      type:Boolean,
+      default:false
+    },
+    'articleId':{
+      type:Number
+    }
+  },
   data() {
     return {
 

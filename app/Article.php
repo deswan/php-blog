@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Article extends Model
 {
-    protected $fillable = ['title','body','summary'];
+    protected $fillable = ['title','body','outline'];
     function categories(){
         return $this->belongsToMany('App\\Category');
     }

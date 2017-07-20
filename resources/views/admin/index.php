@@ -28,7 +28,6 @@
           'csrfToken' => csrf_token(),
       ]); ?>
   </script>
-  <script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.min.js"></script>
   <script src="/js/admin.js"></script>
   <script src="https://use.fontawesome.com/41721e5eb7.js"></script>
 </body>

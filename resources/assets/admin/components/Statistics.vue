@@ -22,7 +22,7 @@ require('echarts/lib/component/tooltip');
 require('echarts/lib/component/title');
 
 export default {
-  props: ['article_id'],
+  props: ['articleId'],
   data() {
     return {
       chart: null,
@@ -143,7 +143,7 @@ export default {
 <style scoped lang="scss">
 #chart-board {
     width: 900px;
-    height: 500px;
+    height: 600px;
     margin: 30px auto;
 }
 #chart {

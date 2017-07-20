@@ -31,7 +31,6 @@ $factory->define(App\Article::class, function (Faker\Generator $faker) {
     return [
         'title'=>$faker->title,
         'body'=>$faker->text($maxNbChars = 200) ,
-        'if_draft'=>$faker->randomElement($array = [0,1]),
         'outline'=>$faker->sentence($nbWords = 6, $variableNbWords = true)
     ];
 });

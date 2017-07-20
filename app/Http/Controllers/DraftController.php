@@ -4,18 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App;
-use Log;
+use Illuminate\Support\Facades\DB;
 class DraftController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        $articles = App\Article::orderBy('created_at')->get();
-        return view('admin.article_manage',compact('articles'));
+        $draft = App\Draft::select('id','updated_at','title')->orderBy('updated_at','desc')->get();
+        return response()->json($draft);
     }
 
     //新建（草稿/发表）
@@ -33,26 +28,43 @@ class DraftController extends Controller
         return response()->json(['id'=>$draft->id]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    //发布
+    public function release(Request $request,App\Draft $draft)
+    {
+        $this->validate($request,[
+            'title'=>'required|filled|max:50',
+            'coding_tags'=>'filled|array',
+            'essay_tags'=>'filled|array',
+            'outline'=>'required|filled|max:100',
+            'body'=>'required|filled'
+        ]);
+        DB::transaction(function () use ($request,$draft){
+          $draft->delete();
+          $article = new App\Article;
+          $article->title = $request->input('title');
+          $article->outline = $request->input('outline');
+          $article->body = $request->input('body');
+          $article->save();
+          if($request->input('coding_tags')){
+            $tags = $request->input('coding_tags');
+          }else{
+            $tags = $request->input('essay_tags');
+          }
+          foreach($tags as $tag_id){
+            $article->categories()->attach($tag_id);
+          }
+        });
+        return response()->json('');
+    }
+
     public function show($id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function edit(App\Draft $draft)
     {
-        //
+      return response()->json($draft);
     }
 
     //更新（草稿/发表）
@@ -69,14 +81,9 @@ class DraftController extends Controller
       return response()->json(['id'=>$draft->id]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    public function destroy(App\Draft $draft)
     {
-        //
+        $draft->delete();
+        return response()->json('');
     }
 }

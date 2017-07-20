@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Log;
+use App;
 class CategoryController extends Controller
 {
     public function index(){
@@ -23,52 +24,41 @@ class CategoryController extends Controller
 
     public function validateName(Request $r){
         $this->validate($r,[
-            'name' => 'required|unique:categories',
+            'name' => 'required|unique:categories,name',
         ]);
         return response()->json([]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $r)
     {
-//        switch ($r->type){
-//            case 'coding':$type_id=0;break;
-//            case 'essay':$type_id=1;break;
-//            default:return redirect('/admin/categories');
-//        }
-        Log::error($r->all());
         $this->validate($r, [
             'name' => 'required|unique:categories|max:20',
-            'type' => 'required|in:1,2',
+            'type' => 'required|in:0,1',
         ]);
-        App\Category::create(['name'=>$r->name,'type'=>$r->type]);
-        return redirect('admin/categories');
+        $m = App\Category::create(['name'=>$r->name,'type'=>$r->type]);
+        return response()->json($m);
 
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    public function update(Request $request, App\Category $tag)
     {
-        $cat = App\Category::find($id);
-        $cat->name = $request->name;
-        $cat->save();
-        return redirect('admin/categories');
+        $this->validate($request, [
+            'name' => 'required|max:20'
+        ]);
+        $tag->name = $request->name;
+        $tag->save();
+        return response()->json($tag);
     }
 
-    public function delete($id)
+    public function destroy(App\Category $tag)
     {
-        App\Category::find($id)->delete();
-        return redirect('admin/categories');
+        $tag->delete();
+        return response()->json('');
+    }
+    public function show(App\Category $tag)
+    {
+        $tag;
+        $articles = $tag->articles()->orderBy('updated_at','desc')->get();
+        return response()->json(compact('tag','articles'));
     }
 }
