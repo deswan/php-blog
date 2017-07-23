@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Stephanie`s blog administration system</title>
+  <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
   <div id="app">
@@ -29,7 +30,6 @@
       ]); ?>
   </script>
   <script src="/js/admin.js"></script>
-  <script src="https://use.fontawesome.com/41721e5eb7.js"></script>
 </body>
 
 </html>

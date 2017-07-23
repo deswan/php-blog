@@ -1,11 +1,7 @@
 <template>
 <div id="write-article" class="body">
   <form action="" method="post" @submit.prevent="toSubmit">
-
-    <input type="hidden" name="draft" :value="!!draft">
-
     <div id="editor"></div>
-
     <div class="input-group" :class="{'has-error':validate.title}">
       <span class="input-group-addon" id="basic-addon1">标题</span>
       <input type="text" name="title" class="form-control" aria-describedby="basic-addon1" @input="titleInput" v-model="title">
@@ -41,17 +37,17 @@
     </div>
 
     <section>
-      <button class="form-submit-btn btn btn-primary" @click.prevent="validateSubmit">发布 <span class="fa fa-paper-plane"></span> </button>
+      <button class="form-submit-btn btn btn-primary" @click.prevent="release">发布 <span class="fa fa-paper-plane"></span> </button>
         <button class="form-submit-btn btn btn-primary" type="submit" v-if="mode!='article_edit'" :class="{'transition-success':saveState==2}" @click.prevent="save"><i v-if="saveState==1" class="fa fa-refresh fa-spin fa-1x fa-fw"></i>保存</button>
     </section>
   </form>
 
-  <pop-model :confirm-btn-text="modalData.confirmBtnText" @confirm="release" ref="modal">
+  <pop-model :confirm-btn-text="modalData.mode=='release' ? '发布' : ''" @confirm="release$1" ref="modal">
     <template v-if="modalData.mode=='release'">
       确定发布文章吗？
     </template>
     <template v-if="modalData.mode=='error'">
-      有内容未填写
+      有内容未填写 或 未通过验证
     </template>
   </pop-model>
 </div>
@@ -59,7 +55,6 @@
 
 <script>
 var E = require('wangeditor');
-var TWEEN = require('@tweenjs/tween.js');
 export default {
   props: {
     draft$1: {
@@ -70,8 +65,6 @@ export default {
   data() {
     return {
       modalData:{
-        confirmBtnText:'',
-        confirm:null,
         mode:'error'
       },
       editor: null,
@@ -87,54 +80,65 @@ export default {
       codeTags: [],
       essayTags: [],
       checkedTags:[],
-      saveState: 0,
-      draft: this.draft$1,
-      tags:null
+      saveState: 0
     }
   },
   created() {
     //tags
-    this.$http.get('/admin/tags').then(response => {
+    this.$http.get(this.appConfig.admin_path+'/tags').then(response => {
       this.codeTags = response.body.coding
       this.essayTags = response.body.essay
     })
     this.mode = this.$route.name;
-    this.id = this.$route.params.id || 0;
-    if(this.mode == 'article_edit'){
-      this.$http.get('/admin/articles/'+this.id+'/edit').then(response => {
-        var article = response.body;
-        this.title = article.title;
-        this.outline = article.outline;
-        this.checkedTags = article.tagIds;
-        this.editor.txt.html(article.body)
-      })
-    }else if(this.mode == 'draft_edit'){
-      this.$http.get('/admin/drafts/'+this.id+'/edit').then(response => {
-        var article = response.body;
-        this.title = article.title;
-        this.outline = article.outline;
-        this.body = article.body;
-        this.editor.txt.html(article.body)
-      })
-    }
+    this.id = this.$route.params.id || 0; //当前草稿id或文章id，取决于mode的值
   },
   mounted() {
     this.editor = new E('#editor');
-    this.editor.customConfig.uploadImgServer = '/upload' // 上传图片到服务器
+    this.editor.customConfig.uploadImgServer = this.appConfig.admin_path+'/uploadFile' // 上传图片路径
+    this.editor.customConfig.uploadImgMaxSize = 10 * 1024 * 1024; //限制10M
+    this.editor.customConfig.uploadImgHeaders = {
+        'X-CSRF-TOKEN': window.Laravel.csrfToken   // 属性值会自动进行 encode ，此处无需 encode
+    };
+    this.editor.customConfig.uploadFileName = 'image'
     this.editor.create();
+
+    var modeStrat = {
+      write(){
+
+      },
+      article_edit(vm){
+        vm.$http.get(vm.appConfig.admin_path+'/articles/'+vm.id+'/edit').then(response => {
+          var article = response.body;
+          vm.title = article.title;
+          vm.outline = article.outline;
+          vm.checkedTags = article.tagIds;
+          vm.editor.txt.html(article.body)
+        })
+      },
+      draft_edit(vm){
+        vm.$http.get(vm.appConfig.admin_path+'/drafts/'+vm.id+'/edit').then(response => {
+          var article = response.body;
+          vm.title = article.title;
+          vm.outline = article.outline;
+          vm.body = article.body;
+          vm.editor.txt.html(article.body)
+        })
+      }
+    }
+    modeStrat[this.mode](this);
   },
   methods: {
     ifChecked(tagId){
       return !!~this.checkedTags.indexOf(tagId);
     },
-    validateSubmit(){
-      if(!window.$(':checked').length || !this.editor.txt.text() || !this.title || !this.outline || this.validate.title || this.validate.outline ){
+    validateRelease(){
+      return !(!window.$(':checked').length || !this.editor.txt.text() || !this.title || !this.outline || this.validate.title || this.validate.outline )
+    },
+    release(){
+      if(!this.validateRelease()){
         this.modalData.mode = 'error';
-        this.modalData.confirmBtnText = '';
       }else{
         this.modalData.mode = 'release';
-        this.modalData.confirmBtnText = '发布';
-        this.modalData.confirm = this.release;
       }
       this.$refs.modal.show();
     },
@@ -146,21 +150,25 @@ export default {
       var formData = new FormData(form);
       formData.append('body', this.editor.txt.html());
       var done = response => {
-        this.saveState = 2;
-        this.id = response.body.id;  //更新草稿
+        this.saveState = 2; //获取完毕，显示动画效果
+
+        //更新草稿
+        this.id = response.body.id;
         this.mode = 'draft_edit';
+
         setTimeout(() => {
-          this.saveState = 0;
+          this.saveState = 0; //save按钮可用
         }, 2000)
       }
-      this.saveState = 1;
-      if (this.mode == 'write') {
-        this.$http.post('/admin/drafts', formData).then(done)
-      } else if(this.mode == 'draft_edit'){
-        this.$http.post('/admin/drafts/' + this.id, formData).then(done)
+      this.saveState = 1; //正在获取
+
+      if (this.mode == 'write') { //存储为草稿
+        this.$http.post(this.appConfig.admin_path+'/drafts', formData).then(done)
+      } else if(this.mode == 'draft_edit'){ //更新草稿
+        this.$http.post(this.appConfig.admin_path+'/drafts/' + this.id, formData).then(done)
       }
     },
-    release(e) {
+    release$1(e) {
       var form = document.forms[0];
       var formData = new FormData(form);
       formData.append('body', this.editor.txt.html());
@@ -168,11 +176,11 @@ export default {
         this.$router.push('/articles');
       }
       if (this.mode == 'write') {
-        this.$http.post('/admin/articles', formData).then(done)
+        this.$http.post(this.appConfig.admin_path+'/articles', formData).then(done)
       } else if(this.mode == 'draft_edit') {
-        this.$http.post('/admin/drafts/release/' + this.id, formData).then(done)
+        this.$http.post(this.appConfig.admin_path+'/drafts/release/' + this.id, formData).then(done)
       }else{
-        this.$http.post('/admin/articles/' + this.id, formData).then(done)
+        this.$http.post(this.appConfig.admin_path+'/articles/' + this.id, formData).then(done)
       }
     },
     titleInput(e) {

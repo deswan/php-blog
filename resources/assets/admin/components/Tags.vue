@@ -13,7 +13,7 @@
 
           <form class="navbar-form navbar-right" @submit.prevent="add" name="add-form">
             <div class="form-group"  :class="{'has-error':!addValidated}">
-              <input type="text" name="name" class="form-control" v-model="addText" @change="addInputChange">
+              <input type="text" name="name" class="form-control" v-model="addText">
             </div>
             <label class="radio-inline">
               <input type="radio" name="type" id="inlineRadio1" value="0" checked> coding
@@ -58,40 +58,34 @@ export default {
       search:'',
       addText:'',
       tagMaxLength: 20,
-      addValidated:true
+      addValidated:true //for class
     }
   },
   created(){
-    this.$http.get('/admin/tags').then(response => {
-      this._coding = response.body.coding;
-      this._essay = response.body.essay;
+    this.$http.get(this.appConfig.admin_path+'/tags').then(response => {
+      this._coding = response.body.coding || [];
+      this._essay = response.body.essay || [];
       this.coding = this._coding;
       this.essay = this._essay;
     })
   },
   methods: {
     add(e) {
-      if (!this.addValidated) return;
-      this.$http.post('/admin/tags',new FormData(document.forms['add-form'])).then(response => {
+      if (!this.addValidated || this.addText.trim().length===0) return;
+      this.$http.post(this.appConfig.admin_path+'/tags',new FormData(document.forms['add-form'])).then(response => {
         this.addText = '';
         if(response.body.type==0){
-          this._coding.push(response.body);
+          this._coding.unshift(response.body);
         }else if(response.body.type==1){
-            this._essay.push(response.body);
+          this._essay.unshift(response.body);
         }
+        //将列表初始化为全部显示，避免search的影响
         this.coding = this._coding;
         this.essay = this._essay;
+
       },response => {
         alert('该名称已被使用')
       })
-    },
-    addInputChange(e){
-      console.log(e.target.value.length);
-      if(e.target.value.length > this.tagMaxLength || e.target.value.length == 0){
-        this.addValidated = false;
-      }else{
-        this.addValidated = true;
-      }
     }
   },
   watch:{
@@ -112,6 +106,13 @@ export default {
         this.essay = this.essay.filter((item) => {
           return regEx.test(item.name)
         })
+      }
+    },
+    addText(text){
+      if(text.length > this.tagMaxLength){
+        this.addValidated = false;
+      }else{
+        this.addValidated = true;
       }
     }
   }

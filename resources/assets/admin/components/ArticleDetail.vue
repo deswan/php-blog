@@ -48,7 +48,7 @@ export default {
     }
   },
   created(){
-    this.$http.get('admin/articles/'+this.$route.params.id).then(response => {
+    this.$http.get(this.appConfig.admin_path+'/articles/'+this.$route.params.id).then(response => {
         this.article = response.body;
     })
     this.modalData.confirm = this.del$1;
@@ -58,7 +58,7 @@ export default {
       this.$refs.modal.show();
     },
     del$1(){
-      this.$http.get('/admin/articles/'+this.$route.params.id+'/delete').then(response => {
+      this.$http.get(this.appConfig.admin_path+'/articles/'+this.$route.params.id+'/delete').then(response => {
           this.$router.push({name:'articles'});
       })
     }

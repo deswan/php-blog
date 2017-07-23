@@ -1,13 +1,13 @@
-require('@/app');
-require('./scss/home.scss');
-import banner from './components/Banner.vue'
-import header from './components/Header.vue'
-import articleList from './components/ArticleList.vue'
+import '@/app';
+import './scss/home.scss';
+import router from './router';
+import Header from './components/Header';
+import Footer from './components/Footer';
 const home = new Vue({
     el: '#app',
+    router,
     components:{
-        'my-banner':banner,
-        'my-header':header,
-        'article-list':articleList
+      'my-header':Header,
+      'my-footer':Footer
     }
 });

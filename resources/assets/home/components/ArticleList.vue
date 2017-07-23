@@ -1,15 +1,7 @@
 <template>
 <section id="article-section">
   <ul class="a-list">
-    <!-- <li is="article-item" v-for="article in articles"></li> -->
-    <li is="article-item" class="article-item"></li>
-    <li is="article-item" class="article-item"></li>
-    <li is="article-item" class="article-item"></li>
-    <li is="article-item" class="article-item"></li>
-    <li is="article-item" class="article-item"></li>
-    <li is="article-item" class="article-item"></li>
-    <li is="article-item" class="article-item"></li>
-    <li is="article-item" class="article-item"></li>
+      <li is="article-item" class="article-item" :article="article" v-for="article in articles" :key="article.id"></li>
   </ul>
 </section>
 </template>
@@ -18,18 +10,55 @@
 import articleItem from './ArticleItem.vue'
 
 export default {
+  props:{
+    type:{
+      type:String,
+      default:''
+    },
+    search:{
+      type:String,
+      default:''
+    }
+  },
   data() {
     return {
       articles: []
     }
   },
+  created(){
+    this.fetch();
+  },
   components: {
     'article-item': articleItem
+  },
+  methods:{
+    fetch(){
+      var params = {} , query = this.$route.query;
+      query.tagId && (params.tagId = query.tagId);
+      query.year && (params.year = query.year);
+      query.search && (params.search = query.search);
+      query.page && (params.page = query.page);
+      this.$http.get('/getArticles/'+this.type,{params:params}).then(response=>{
+        this.articles = response.body;
+        if(query.page){
+          this.$nextTick(function(){  //待渲染完成后再scroll，不然没效果
+              window.$.scrollTo(document.getElementById('type-banner').clientHeight,'200');
+          })
+        }
+      });
+    }
+  },
+  watch:{
+    $route(to){
+      this.fetch();
+    },
+    search(){
+      this.fetch();
+    }
   }
 }
 </script>
 <style scoped lang="scss">
-@import '../scss/myvar';
 #article-section {
     width: 98%;
     padding-left: 2%;

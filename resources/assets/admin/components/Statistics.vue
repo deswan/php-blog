@@ -57,7 +57,8 @@ export default {
       year: 2017,
       month: null,
       state: 'year',
-      nowYear:0
+      nowYear:0,
+      firstFlush:true
     }
   },
   computed: {
@@ -66,44 +67,48 @@ export default {
     }
   },
   methods: {
-    back(){
+    back(){ //返回年
+      this.month = null;
       this.state = 'year';
     },
     flush() {
-      var url = '/stat',
-        val;
-      for (var i = 0, l = arguments.length; i < l; i++) {
-        if (val = arguments[i]) {
-          url += '/' + val;
-        }
-      }
-      this.$http.get(url).then(response => {
+      var url = '/stat/getData';
+      var params = {};
+      this.year && (params.year = this.year);
+      this.month && (params.month = this.month);
+      this.$http.get(url,{params:params}).then(response => {
         var result = response.body;
-        this.year = this.nowYear = result.year;
-        this.month = result.month;
-        this.option.series[0].data = result.data;
-        this.option.title.subtext = '共' + result.sum + '次';
-        this.option.title.text = this.title;
+        this.nowYear = result.nowYear;
+        this.year = result.year;
+        this.month = result.month || null;
 
-        if (result.month) {
-          this.option.xAxis.data = [];
+        //刷新轴
+        this.option.xAxis.data = [];
+        if (this.month) {
           for (var i = 0, day = result.data.length; i < day; i++) {
             this.option.xAxis.data[i] = i+1;
           }
+        }else{
+          for (var i = 0; i < 12; i++) {
+            this.option.xAxis.data[i]= (i + 1) + '月';
+          }
         }
+
+        //刷新options
+        this.option.series[0].data = result.data;
+        this.option.title.subtext = '共' + result.sum + '次';
+        this.option.title.text = this.title;
 
         this.chart && this.chart.setOption(this.option);
       })
     }
   },
   created() {
-    //init chart
+    //初始化x轴
     for (var i = 0; i < 12; i++) {
       this.option.xAxis.data[i] = (i + 1) + '月';
       this.option.series[0].data[i] = 0;
     }
-    this.option.xAxis.data[i] = (i + 1) + '月';
-    this.option.title.text = this.title;
     this.flush();
   },
   mounted() {
@@ -113,29 +118,21 @@ export default {
     this.chart.setOption(this.option);
     this.chart.on('click', params => {
       if(this.state=='year'){
-        console.log(params);
         this.month = params.dataIndex + 1
         this.state = 'month'
       }
     })
   },
   watch: {
-    year(newYear) {
-      this.state == 'year' && this.flush(newYear);
+    year() {
+      this.flush();
     },
-    month(newMonth) {
-      this.state == 'month' && this.flush(this.year, newMonth);
+    month(newMonth,old) {
+      if(old === null) return;  //从年点进月时不刷新（state的变化会刷新）
+      this.flush();
     },
-    state(newState) {
-      if (newState == 'year') {
-        this.option.xAxis.data = [];
-        for (var i = 0; i < 12; i++) {
-          this.option.xAxis.data[i]= (i + 1) + '月';
-        }
-        this.flush(this.year);
-      } else {
-        this.flush(this.year, this.month);
-      }
+    state() {
+      this.flush();
     }
   }
 }

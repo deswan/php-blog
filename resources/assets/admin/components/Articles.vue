@@ -37,7 +37,7 @@ export default {
     }
   },
   created(){
-    this.$http.get('admin/articles').then(response => {
+    this.$http.get(this.appConfig.admin_path+'/articles').then(response => {
         this.articles = response.body;
     })
   }

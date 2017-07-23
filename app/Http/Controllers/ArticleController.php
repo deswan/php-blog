@@ -8,12 +8,14 @@ use Log;
 use Illuminate\Support\Facades\DB;
 class ArticleController extends Controller
 {
+    //获取文章列表
     public function index()
     {
-        $articles = App\Article::select('id','title','updated_at')->orderBy('created_at')->get();
+        //注意主页需按created_at排序
+        $articles = App\Article::select('id','title','updated_at')->latest('updated_at')->get();
         foreach($articles as &$article){
-          $article['type'] = $article->categories()->first()['type'] ? 'coding' : 'essay';
-          $article['tag'] = $article->categories()->select('id','name')->get();
+          $article['type'] = $article->categories()->first()['type'] ? 'code' : 'essay';
+          $article['tag'] = $article->categories()->select('id','name','type')->get();
         }
         return response()->json($articles);
     }
@@ -46,6 +48,7 @@ class ArticleController extends Controller
         return response()->json('');
     }
 
+    //详情
     public function show(App\Article $article)
     {
       unset($article['created_at']);
@@ -54,6 +57,7 @@ class ArticleController extends Controller
       return response()->json($article);
     }
 
+    //编辑
     public function edit(App\Article $article)
     {
       unset($article['created_at']);
@@ -91,9 +95,17 @@ class ArticleController extends Controller
       return response()->json($article);
     }
 
+    //删除
     public function destroy(App\Article $article)
     {
         $article->delete();
+        $article->categories()->detach();
         return response()->json('');
+    }
+
+    //上传文章图片
+    public function uploadFile(Request $request){
+      $path = $request->file('image')->store('uploads/images','public');
+      return response()->json(['errno'=>0,'data'=>['/storage/'.$path]]);
     }
 }

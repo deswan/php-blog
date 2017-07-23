@@ -2,35 +2,31 @@
 <li class="a-item">
   <div class="a-item-date">
     <time>
-      <span class="date">12/16</span><br>
-      <span class="year">2016</span>
+      <span class="date">{{article.month}}/{{article.day}}</span><br>
+      <span class="year">{{article.year}}</span>
     </time>
   </div>
   <h4 class="a-item-title">
-    <span class="title">我是标题</span>
-    <a class="badge" href="#">电影</a>
-    <a class="badge" href="#">随笔</a>
+    <a :href="'/article/'+article.id" class="title">{{article.title}}</a>
+    <router-link class="badge" :key="tag.id" :to="{name : article.type ,query:{tagId:tag.id}}" v-for="tag in article.tags">{{tag.name}}</router-link>
   </h4>
   <p class="a-item-outline">
-    我们很快发现，如果页面不考虑象素级
+    {{article.outline}}
   </p>
-  <time class="a-item-date-inner">2016-10-16</time>
+  <time class="a-item-date-inner">{{article.year}}-{{article.month}}-{{article.day}}</time>
 </li>
 </template>
 
 <script>
 export default {
+  props:['article'],
   data() {
-    return {
-      articles: []
-    }
-  },
-  mounted() {}
+    return {}
+  }
 }
 </script>
 <style scoped lang="scss">
 @import '../scss/myvar';
-
 .a-item {
     background-color: white;
     padding: 25px 40px 20px 60px;
@@ -44,24 +40,9 @@ export default {
     text-align: left;
     line-height: 30px;
 }
-.a-item-title .title{
-  @include t-shadow;
-  font-size: 25px;
-  font-weight: bold;
-  vertical-align: middle;
-}
-.a-item-title .badge{
-  display: inline-block;
-  vertical-align: middle;
-  border-radius: 2px;
-  padding: 0 5px;
-  line-height: 22px;
-  vertical-align: middle;
-  font-size:12px;
-  background-color: $bg;
-  color:$red;
-}
 .a-item-date {
+  font-family: "Hiragino Sans GB", "Microsoft YaHei",
+  "WenQuanYi Micro Hei", sans-serif;
     box-sizing: border-box;
     position: absolute;
     top: 20px;
@@ -70,7 +51,7 @@ export default {
     height: 70px;
     padding-top: 20px;
     border-radius: 50%;
-    background-color: $text-color;
+    background-color: $brown;
     color: white;
     opacity: 1;
     text-align: center;

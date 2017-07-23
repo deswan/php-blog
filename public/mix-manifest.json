@@ -7,5 +7,11 @@
   "/js/write.js": "/js/write.js",
   "/js/category.js": "/js/category.js",
   "/js/article.js": "/js/article.js",
-  "/js/admin.js": "/js/admin.js"
+  "/js/admin.js": "/js/admin.js",
+  "/js/code.js": "/js/code.js",
+  "/js/login.js": "/js/login.js",
+  "/js/admin.js.map": "/js/admin.js.map",
+  "/js/home.js.map": "/js/home.js.map",
+  "/js/article.js.map": "/js/article.js.map",
+  "/js/login.js.map": "/js/login.js.map"
 }

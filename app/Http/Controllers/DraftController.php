@@ -7,13 +7,14 @@ use App;
 use Illuminate\Support\Facades\DB;
 class DraftController extends Controller
 {
+    //获取列表
     public function index()
     {
-        $draft = App\Draft::select('id','updated_at','title')->orderBy('updated_at','desc')->get();
+        $draft = App\Draft::select('id','updated_at','title')->latest('updated_at')->get();
         return response()->json($draft);
     }
 
-    //新建（草稿/发表）
+    //新建
     public function store(Request $request)
     {
         $this->validate($request,[
@@ -57,17 +58,14 @@ class DraftController extends Controller
         return response()->json('');
     }
 
-    public function show($id)
-    {
-        //
-    }
 
+    //编辑
     public function edit(App\Draft $draft)
     {
       return response()->json($draft);
     }
 
-    //更新（草稿/发表）
+    //更新
     public function update(Request $request,App\Draft $draft)
     {
       $this->validate($request,[
@@ -81,6 +79,7 @@ class DraftController extends Controller
       return response()->json(['id'=>$draft->id]);
     }
 
+    //删除
     public function destroy(App\Draft $draft)
     {
         $draft->delete();

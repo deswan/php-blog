@@ -6,23 +6,41 @@ use Illuminate\Http\Request;
 
 class StatController extends Controller
 {
-    public function index($year = null,$month = null){
-      $year || $year = getdate()['year']; //默认今年
-      if(!$month){
-        $result = DB::select('SELECT MONTH(time) as m,count(*) as count FROM `visit_flow` WHERE YEAR(time) = ? group by m order by m', [$year]);
-        $result = array_column($result,'count','m');
+    public function getData(Request $request,$article_id=null){
+      $nowYear = getdate()['year'];
+      $year = intval($request->input('year',$nowYear));
+      $month = intval($request->input('month'));
+      $query = DB::table('visits')->groupBy('time$1')->orderBy('time$1');
+
+      if($article_id){
+        $query = $query->where('article_id','=',$article_id);
+      }
+
+      if(!$month){    // exp. 2017
+        $query = $query->select(DB::raw('MONTH(time) as time$1,count(*) as count'))
+          ->whereRaw('YEAR(time) = '.$year);
+        $result = $query->get()->toArray();
+        $result = array_column($result,'count','time$1');
         for($i=1;$i<=12;$i++){
           $data[] = isset($result[$i]) ? $result[$i] : 0 ;
         }
-      }else{
-        $result = DB::select('SELECT DAYOFMONTH(time) as d,count(*) as count FROM `visit_flow` WHERE YEAR(time) = ? and MONTH(time) = ? group by d order by d', [$year,$month]);
-        $result = array_column($result,'count','d');
+      }else{  // exp. 2017/1
+        $query = $query->select(DB::raw('DAYOFMONTH(time) as time$1,count(*) as count'))
+          ->whereRaw('YEAR(time) = '.$year)
+          ->whereRaw('MONTH(time) = '.$month);
+        $result = $query->get()->toArray();
+        $result = array_column($result,'count','time$1');
         $t = date('t',strtotime("$year-$month-1")); //当月总天数
         for($i=1;$i<=$t;$i++){
           $data[] = isset($result[$i]) ? $result[$i] : 0 ;
         }
       }
       $sum = array_sum($data);
-      return response()->json(compact('data','sum','year','month'));
+      return response()->json(compact('data','sum','year','month','nowYear'));
+    }
+    public function visit(Request $request){
+      $article_id = $request->input('article_id',null);
+      \App\Visit::create(['time'=>date('Y-m-d H:i:s'),'article_id'=>$article_id]);
+      return response()->json(['error'=>0]);
     }
 }

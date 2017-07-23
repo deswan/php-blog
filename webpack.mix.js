@@ -26,5 +26,7 @@ mix.webpackConfig({
 
 mix.disableNotifications();
 
-mix.js('resources/assets/home/home.js', 'public/js').sourceMaps()
+mix.js('resources/assets/home/home.js', 'public/js')
   .js('resources/assets/admin/admin.js', 'public/js')
+  .js('resources/assets/admin/login.js', 'public/js')
+  .js('resources/assets/home/article.js', 'public/js')

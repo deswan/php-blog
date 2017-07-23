@@ -7,8 +7,9 @@ use Log;
 use App;
 class CategoryController extends Controller
 {
+    //列表
     public function index(){
-        $result = \App\Category::orderBy('created_at')->get();
+        $result = \App\Category::latest('updated_at')->get();
         foreach($result as $val){
           if($val['type']===0){
             $coding[]=$val;
@@ -22,6 +23,7 @@ class CategoryController extends Controller
         return response()->json(compact('coding','essay'));
     }
 
+    //检查名称是否重复
     public function validateName(Request $r){
         $this->validate($r,[
             'name' => 'required|unique:categories,name',
@@ -29,6 +31,7 @@ class CategoryController extends Controller
         return response()->json([]);
     }
 
+    //新建
     public function store(Request $r)
     {
         $this->validate($r, [
@@ -40,6 +43,7 @@ class CategoryController extends Controller
 
     }
 
+    //更新
     public function update(Request $request, App\Category $tag)
     {
         $this->validate($request, [
@@ -50,14 +54,17 @@ class CategoryController extends Controller
         return response()->json($tag);
     }
 
+    //删除
     public function destroy(App\Category $tag)
     {
         $tag->delete();
+        $tag->articles()->detach();
         return response()->json('');
     }
+
+    //显示详情
     public function show(App\Category $tag)
     {
-        $tag;
         $articles = $tag->articles()->orderBy('updated_at','desc')->get();
         return response()->json(compact('tag','articles'));
     }

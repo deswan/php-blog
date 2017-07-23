@@ -1,0 +1,66 @@
+@import "./variables";
+body{
+  background-color: $bg;
+}
+.login-frame{
+  position: fixed;
+  top:50%;
+  left:50%;
+  width: 400px;
+  height: 500px;
+  transform: translateX(-50%) translateY(-50%);
+
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 0 20px 0 lightgrey;
+}
+.logo{
+  display: block;
+  width: 80px;
+  margin:50px auto;
+}
+.input-group{
+  position: relative;
+  width: 70%;
+  margin:30px auto;
+  height: 40px;
+}
+.input-group label{
+  position: absolute;
+  left: 15px;
+  top:0;
+  font-size: 25px;
+  color:$brown;
+  line-height: 40px;
+}
+.input-group input{
+  box-sizing: border-box;
+  padding: 5px 20px 5px 40px;
+  height: 100%;
+  width: 100%;
+  border:none;
+  border-radius: 40px;
+  background-color: whitesmoke;
+}
+.submit-button{
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  bottom:60px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background-color: $brown;
+  border:none;
+  color:whitesmoke;
+}
+button:focus,input:focus{
+  outline:none;
+}
+button:hover{
+  cursor: pointer;
+}
+.error{
+  text-align: center;
+  color:$red;
+}

@@ -38,7 +38,7 @@
       </template>
     <template v-else-if="modalData.mode=='edit'">
       <form>
-        <div class="form-group">
+        <div class="form-group" :class="{'has-error':!editTextValidated}">
           <label for="exampleInputEmail1">修改标签 {{tag.name}}</label>
           <input type="text" class="form-control" id="exampleInputEmail1" v-model="editText">
         </div>
@@ -54,31 +54,30 @@ export default {
     return {
       modalData: {
         confirmBtnText: "删除",
-        confirm: null,
+        confirm: this.del$1,
         mode: ''
       },
       editText:'',
+      editTextValidated:true,
       tag: {},
       articles: []
     }
   },
   created() {
-    this.$http.get('admin/tags/' + this.$route.params.id).then(response => {
+    this.$http.get(this.appConfig.admin_path+'/tags/' + this.$route.params.id).then(response => {
       this.articles = response.body.articles;
       this.tag = response.body.tag;
     })
-    this.modalData.confirm = this.del$1;
   },
   methods: {
     del$1() {
-      this.$http.get('admin/tags/' + this.$route.params.id + '/delete').then(response => {
-        this.$router.push({
-          name: 'tags'
-        })
+      this.$http.get(this.appConfig.admin_path+'/tags/' + this.$route.params.id + '/delete').then(response => {
+        this.$router.push({ name: 'tags' })
       });
     },
     edit$1() {
-      this.$http.post('admin/tags/' + this.$route.params.id,{name:this.editText}).then(response => {
+      if(!this.editTextValidated) return;
+      this.$http.post(this.appConfig.admin_path+'/tags/' + this.$route.params.id,{name:this.editText}).then(response => {
         this.tag = response.body;
       });
     },
@@ -94,6 +93,17 @@ export default {
       this.modalData.confirm = this.edit$1;
       this.modalData.mode = 'edit';
       this.$refs.modal.show();
+    }
+  },
+  watch:{
+    editText(text){
+      if(text.length===0 || text.length > 20){
+        this.editTextValidated = false;
+        this.modalData.confirmBtnText = ''
+      }else{
+        this.editTextValidated = true;
+        this.modalData.confirmBtnText = '完成'
+      }
     }
   }
 }
