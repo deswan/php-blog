@@ -21,13 +21,19 @@ li {
 
 a {
   text-decoration: none;
-  &:link, &:visited, &:hover, &:active {
-    text-decoration: none;
-  }
+}
+
+:link, :visited, :hover, :active {
+  text-decoration: none;
+  color:$brown;
 }
 
 #main {
-  padding-top: 50px;
+  padding-top: 52px;
+  min-height: calc(100vh - 52px - 150px);
+}
+#footer{
+  margin-top:50px;
 }
 
 .badge{
@@ -44,6 +50,10 @@ a {
   vertical-align: middle;
   background-color: $bg;
   color:$black;
+}
+.badge.code{
+  background-color: $brown;
+  color:$bg;
 }
 .title{
   @include t-shadow;

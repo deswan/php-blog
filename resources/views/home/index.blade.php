@@ -8,11 +8,11 @@
 <body>
 <div id="app">
     <my-header></my-header>
-<section id="main">
+<main id="main">
   <transition name="fade">
     <router-view></router-view>
   </transition>
-</section>
+</main>
 <my-footer></my-footer>
 </div>
 <script>

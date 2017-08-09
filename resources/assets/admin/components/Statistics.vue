@@ -74,6 +74,7 @@ export default {
     flush() {
       var url = '/stat/getData';
       var params = {};
+      this.articleId && ( url += '/' + this.articleId );
       this.year && (params.year = this.year);
       this.month && (params.month = this.month);
       this.$http.get(url,{params:params}).then(response => {

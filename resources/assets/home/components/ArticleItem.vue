@@ -8,7 +8,7 @@
   </div>
   <h4 class="a-item-title">
     <a :href="'/article/'+article.id" class="title">{{article.title}}</a>
-    <router-link class="badge" :key="tag.id" :to="{name : article.type ,query:{tagId:tag.id}}" v-for="tag in article.tags">{{tag.name}}</router-link>
+    <router-link class="badge" :class="tag.type ? 'essay' : 'code'" :key="tag.id" :to="{name : article.type ,query:{tagId:tag.id}}" v-for="tag in article.tags">{{tag.name}}</router-link>
   </h4>
   <p class="a-item-outline">
     {{article.outline}}
@@ -84,7 +84,9 @@ export default {
     }
 }
 .a-item-outline {
-    font-size: 17px;
+    color:grey;
+    font-weight: normal;
+    font-size: 16px;
     margin-top:10px;
     height: 30px;
 }

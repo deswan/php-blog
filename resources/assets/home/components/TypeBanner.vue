@@ -12,7 +12,7 @@
     <span class="type-banner-tag" v-for="tag in tags" :class="{active:activeTagId==tag.id}" @click="clickTag(tag.id)">{{tag.name}}</span>
   </section>
   <section class="type-banner-year-section">
-    <span class="type-banner-year" :class="{active:activeYear==0}" @click="clickYear(0)">所有标签</span>
+    <span class="type-banner-year" :class="{active:activeYear==0}" @click="clickYear(0)">所有年份</span>
     <span class="type-banner-year" v-for="year in years" :class="{active:activeYear==year}" @click="clickYear(year)">{{year}}</span>
   </section>
 </section>

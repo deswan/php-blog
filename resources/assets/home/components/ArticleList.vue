@@ -36,7 +36,7 @@ export default {
       var params = {} , query = this.$route.query;
       query.tagId && (params.tagId = query.tagId);
       query.year && (params.year = query.year);
-      query.search && (params.search = query.search);
+      this.search && (params.search = this.search);
       query.page && (params.page = query.page);
       this.$http.get('/getArticles/'+this.type,{params:params}).then(response=>{
         this.articles = response.body;

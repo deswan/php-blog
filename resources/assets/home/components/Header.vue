@@ -4,21 +4,21 @@
     <li class="header-li">
       <router-link class="header-li-a" to="/code" v-if="!disableRouter">
         <img class="header-li-img" :src="codeImg">
-        <span class="header-li-text">CODE</span>
+        <span class="header-li-text">编程</span>
       </router-link>
       <a class="header-li-a" href="/code" v-else>
         <img class="header-li-img" :src="codeImg">
-        <span class="header-li-text">CODE</span>
+        <span class="header-li-text">编程</span>
       </a>
     </li>
     <li class="header-li">
       <router-link class="header-li-a" to="/essay" v-if="!disableRouter">
         <img class="header-li-img" :src="essayImg">
-        <span class="header-li-text">ESSAY</span>
+        <span class="header-li-text">闲话</span>
       </router-link>
       <a class="header-li-a" href="/essay" v-else>
         <img class="header-li-img" :src="essayImg">
-        <span class="header-li-text">ESSAY</span>
+        <span class="header-li-text">闲话</span>
       </a>
     </li>
     <li class="header-li" id="header-logo-li">

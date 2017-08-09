@@ -3,7 +3,6 @@ body{
   background: $bg;
 }
 #article{
-    color:$black;
     visibility: visible !important;
     box-sizing: border-box;
     background-color: white;
@@ -20,16 +19,20 @@ body{
 .article{
   &-title{
     font-size: 26px;
+    color:$brown;
+    @include t-shadow;
   }
   &-time{
     font-size: 14px;
+    color:grey;
+    font-weight: normal;
   }
   &-footer{
-    text-align: right;
     border-top: dashed whitesmoke 2px;
     padding: 30px 0 60px;
   }
   &-body{
+    color:$black;
     font-family: "Helvetica Neue","Helvetica","Arial","PingFang SC","Hiragino Sans GB", "Microsoft YaHei","WenQuanYi Micro Hei", sans-serif;
     font-size: 18px;
     font-weight: normal;
@@ -76,9 +79,85 @@ body{
     }
   }
 }
+.related{
+  text-align: center;
+  &-header{
+    margin-top:0;
+    font-size: 20px;
+    color:$brown;
+  }
+  &-li{
+    color:$brown;
+    margin:10px 0;
+  }
+  &-li-title{
+    font-size: 18px;
+    @include t-shadow;
+  }
+}
 blockquote{
   border-left: solid red 5px;
   margin:20px 0;
   padding: 10px 20px;
   background-color: whitesmoke;
+}
+.badge:first-child{
+  margin-left: 0;
+}
+#shift-article{
+  visibility: visible !important;  //解决css未加载时的闪屏问题
+  width:95%;
+  max-width:800px;
+  margin:0 auto;
+  @media screen and (max-width:720px){
+    width: 95%;
+  }
+  &:after{
+    content: '\020';
+    display: block;
+    clear: both;
+  }
+}
+
+.shift-article-item{
+  &.last{
+    float: left;
+    .shift-logo{
+      margin-right: 10px;
+    }
+  }
+  &.next{
+    float: right;
+    .shift-logo{
+      margin-left: 10px;
+    }
+  }
+  &:hover{
+    .shift-logo{
+      background: $brown;
+    }
+    .shift-title{
+      color:$brown;
+    }
+  }
+}
+.shift-title{
+  transition: color .5s ;
+  color:grey;
+}
+.shift-logo{
+  transition: background-color .3s ;
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  font-size: 20px;
+  border-radius: 20px;
+  background: grey;
+  color:whitesmoke;
+  text-align: center;
+}
+.article-type-logo{
+  vertical-align: middle;
+  width:30px;
 }

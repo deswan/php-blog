@@ -1,5 +1,5 @@
 <template>
-<section class="pagination">
+<section class="pagination" v-if="pageSum>1">
 <span class="fa fa-angle-left pagination-control" :class="{disabled:page<2}" @click="triggerRoute(page-1)"></span>
 <span class="pagination-item" :class="{active:page==p}" @click="triggerRoute(p)" v-for="p in pageSum">{{p}}</span>
 <span class="fa fa-angle-right pagination-control" :class="{disabled:page>pageSum-1}" @click="triggerRoute(page+1)"></span>
@@ -60,7 +60,7 @@ export default {
   display: flex;
   width: 1100px;
   max-width: 95%;
-  margin:30px auto;
+  margin:30px auto 0;
   height: 50px;
   flex-flow:row nowrap;
   justify-content: center;
