@@ -11,7 +11,7 @@ class DraftController extends Controller
     public function index()
     {
         $draft = App\Draft::select('id','updated_at','title')->latest('updated_at')->get();
-        return response()->json($draft);
+        return $draft;
     }
 
     //新建
@@ -21,12 +21,8 @@ class DraftController extends Controller
             'title'=>'max:50',
             'outline'=>'max:100'
         ]);
-        $draft = App\Draft::create([
-          'title'=>$request->input('title'),
-          'body'=>$request->input('body'),
-          'outline'=>$request->input('outline'),
-        ]);
-        return response()->json(['id'=>$draft->id]);
+        $draft = App\Draft::create($request->all());
+        return ['id'=>$draft->id];
     }
 
     //发布
@@ -41,11 +37,7 @@ class DraftController extends Controller
         ]);
         DB::transaction(function () use ($request,$draft){
           $draft->delete();
-          $article = new App\Article;
-          $article->title = $request->input('title');
-          $article->outline = $request->input('outline');
-          $article->body = $request->input('body');
-          $article->save();
+          $article = App\Article::create($request->all());
           if($request->input('coding_tags')){
             $tags = $request->input('coding_tags');
           }else{
@@ -55,14 +47,14 @@ class DraftController extends Controller
             $article->categories()->attach($tag_id);
           }
         });
-        return response()->json('');
+        return '';
     }
 
 
     //编辑
     public function edit(App\Draft $draft)
     {
-      return response()->json($draft);
+      return $draft;
     }
 
     //更新
@@ -76,13 +68,13 @@ class DraftController extends Controller
       $draft->outline = $request->input('outline');
       $draft->body = $request->input('body');
       $draft->save();
-      return response()->json(['id'=>$draft->id]);
+      return ['id'=>$draft->id];
     }
 
     //删除
     public function destroy(App\Draft $draft)
     {
         $draft->delete();
-        return response()->json('');
+        return '';
     }
 }

@@ -10,17 +10,20 @@ class StatController extends Controller
       $nowYear = getdate()['year'];
       $year = intval($request->input('year',$nowYear));
       $month = intval($request->input('month'));
-      $query = DB::table('visits')->groupBy('time$1')->orderBy('time$1');
+      $query = DB::table('visits')->groupBy('time1')->orderBy('time1');
 
       if($article_id){
         $query = $query->where('article_id','=',$article_id);
       }
 
       if(!$month){    // exp. 2017
-        $query = $query->select(DB::raw('MONTH(time) as time$1,count(*) as count'))
+        $query = $query->select(DB::raw('MONTH(time) as time1,count(*) as count'))
           ->whereRaw('YEAR(time) = '.$year);
         $result = $query->get()->toArray();
-        $result = array_column($result,'count','time$1');
+        foreach($result as $k=>$v){
+          $result[$k] = (array)$v;
+        }
+        $result = array_column($result,'count','time1');
         for($i=1;$i<=12;$i++){
           $data[] = isset($result[$i]) ? $result[$i] : 0 ;
         }
@@ -29,6 +32,9 @@ class StatController extends Controller
           ->whereRaw('YEAR(time) = '.$year)
           ->whereRaw('MONTH(time) = '.$month);
         $result = $query->get()->toArray();
+        foreach($result as $k=>$v){
+          $result[$k] = (array)$v;
+        }
         $result = array_column($result,'count','time$1');
         $t = date('t',strtotime("$year-$month-1")); //当月总天数
         for($i=1;$i<=$t;$i++){

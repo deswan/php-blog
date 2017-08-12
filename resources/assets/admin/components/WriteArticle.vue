@@ -1,7 +1,8 @@
 <template>
 <div id="write-article" class="body">
   <form action="" method="post" @submit.prevent="toSubmit">
-    <div id="editor"></div>
+    <div id="editor1"></div>
+    <div id="editor2" style="height:600px;"></div>
     <div class="input-group" :class="{'has-error':validate.title}">
       <span class="input-group-addon" id="basic-addon1">标题</span>
       <input type="text" name="title" class="form-control" aria-describedby="basic-addon1" @input="titleInput" v-model="title">
@@ -93,7 +94,7 @@ export default {
     this.id = this.$route.params.id || 0; //当前草稿id或文章id，取决于mode的值
   },
   mounted() {
-    this.editor = new E('#editor');
+    this.editor = new E('#editor1','#editor2');
     this.editor.customConfig.uploadImgServer = this.appConfig.admin_path+'/uploadFile' // 上传图片路径
     this.editor.customConfig.uploadImgMaxSize = 10 * 1024 * 1024; //限制10M
     this.editor.customConfig.uploadImgHeaders = {
@@ -126,6 +127,21 @@ export default {
       }
     }
     modeStrat[this.mode](this);
+
+    var contentEditor = document.getElementsByClassName('w-e-text')[0];
+    function mousewheelHandler(e){
+      var dom = e.currentTarget,down;
+      if(e.wheelDelta){
+        down = e.wheelDelta < 0;
+      }else if(e.detail){
+        down = e.detail > 0;
+      }
+      if(down && dom.scrollTop >= dom.scrollHeight - dom.clientHeight - 1){
+        e.preventDefault();
+      }
+    }
+    contentEditor.onmousewheel = mousewheelHandler;
+    contentEditor.addEventListener('DOMMouseWheel',mousewheelHandler);
   },
   methods: {
     ifChecked(tagId){
@@ -201,6 +217,10 @@ export default {
 }
 </script>
 <style scoped lang="scss">
+#editor2{
+  background: white;
+  border: solid 1px lightgrey;
+}
 .input-group {
     margin-top: 20px;
 }

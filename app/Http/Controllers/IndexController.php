@@ -11,22 +11,23 @@ class IndexController extends Controller
         return view('home.index');
     }
     public function article(\App\Article $article){
-        $article['type'] = $article->categories()->first()['type'] ? 'essay' : 'code';
-        $article['tags'] = $article->categories()->select('id','name','type')->get();
+        $article->type = $article->categories()->value('type') ? 'essay' : 'code';
+        $article->tags = $article->categories()->select('id','name','type')->get();
 
+        //包含相同标签的文章
         $related = DB::table('article_category')
           ->select(DB::raw('articles.id, articles.title,
           YEAR(articles.created_at) as year,
           MONTH(articles.created_at) as month,
           DAYOFMONTH(articles.created_at) as day'))
           ->where('articles.id','!=',$article->id)
-          ->where('article_category.article_id','=',$article->id)
+          ->whereIn('article_category.category_id',$article->tags->pluck('id'))
           ->join('articles','articles.id','=','article_category.article_id')
           ->groupBy('articles.id','articles.title','articles.created_at')  //去重
           ->latest('articles.created_at')
-          ->take(4)
-          ->get();
+          ->take(4)->get();
 
+        //同类别（code/essay）的文章
         if(!count($related)){
           $related = DB::table('categories')
             ->select(DB::raw('articles.id, articles.title,
@@ -34,7 +35,7 @@ class IndexController extends Controller
             MONTH(articles.created_at) as month,
             DAYOFMONTH(articles.created_at) as day'))
             ->where('articles.id','!=',$article->id)
-            ->where('categories.type','=',$article->categories[0]['type'])
+            ->where('categories.type','=',$article->categories()->value('type'))
             ->join('article_category','categories.id','=','article_category.category_id')
             ->join('articles','articles.id','=','article_category.article_id')
             ->groupBy('articles.id','articles.title','articles.created_at')  //去重
@@ -43,31 +44,33 @@ class IndexController extends Controller
             ->get();
         }
 
+        $article->related = $related;
+
+        //同类别文章中的上一篇（新一次发表）
         $last = DB::table('categories')
           ->select(DB::raw('articles.id, articles.title'))
           ->where('articles.created_at','>',$article->created_at)
-          ->where('categories.type','=',$article->categories[0]['type'])
+          ->where('categories.type','=',$article->categories()->value('type'))
           ->join('article_category','categories.id','=','article_category.category_id')
           ->join('articles','articles.id','=','article_category.article_id')
           ->groupBy('articles.id','articles.title','articles.created_at')  //去重
-          ->orderBy('articles.created_at')
-          ->take(1)
-          ->get();
+          ->oldest('articles.created_at')
+          ->take(1)->get();
 
+          //同类别文章中的下一篇（旧一次发表）
         $next = DB::table('categories')
           ->select(DB::raw('articles.id, articles.title'))
           ->where('articles.created_at','<',$article->created_at)
-          ->where('categories.type','=',$article->categories[0]['type'])
+          ->where('categories.type','=',$article->categories()->value('type'))
           ->join('article_category','categories.id','=','article_category.category_id')
           ->join('articles','articles.id','=','article_category.article_id')
           ->groupBy('articles.id','articles.title','articles.created_at')  //去重
-          ->orderBy('articles.created_at','desc')
-          ->take(1)
-          ->get();
+          ->latest('articles.created_at')
+          ->take(1)->get();
 
-        count($last) && ($article['last'] = $last[0]);
-        count($next) && ($article['next'] = $next[0]);
-        $article['related'] = $related;
+        count($last) && ($article->last = $last[0]);
+        count($next) && ($article->next = $next[0]);
+
 
         return view('home.article',compact('article'));
     }
@@ -76,14 +79,14 @@ class IndexController extends Controller
         $tags = \App\Category::has('articles')->select('id','name','type')->orderBy('updated_at','desc')->get();
         $years = DB::select('select YEAR(created_at) as  year from articles group by year order by year desc');
       }else if($type === 'code'){
-        $tags = \App\Category::has('articles')->select('id','name')->where('type',0)->orderBy('updated_at','desc')->get();
+        $tags = \App\Category::has('articles')->select('id','name')->where('type',0)->latest('updated_at')->get();
         $years = DB::select('select YEAR(articles.created_at) as  year from articles,article_category,categories where articles.id = article_category.article_id and categories.id = article_category.category_id and categories.type=0 group by year order by year desc');
       }else if($type === 'essay'){
-        $tags = \App\Category::has('articles')->select('id','name')->where('type',1)->orderBy('updated_at','desc')->get();
+        $tags = \App\Category::has('articles')->select('id','name')->where('type',1)->latest('updated_at')->get();
         $years = DB::select('select YEAR(articles.created_at) as  year from articles,article_category,categories where articles.id = article_category.article_id and categories.id = article_category.category_id and categories.type=1 group by year order by year desc');
       }
       $years = array_column($years,'year');
-      return response()->json(compact('tags','years'));
+      return compact('tags','years');
     }
     public function getArticles(Request $request,$type=null){
       $tagId = $request->input('tagId', 0);
@@ -97,29 +100,27 @@ class IndexController extends Controller
       articles.outline,
       YEAR(articles.created_at) as year,
       MONTH(articles.created_at) as month,
-      DAYOFMONTH(articles.created_at) as day'));
-
-      if($type||$tagId){
-        $query = $query
-        ->join('article_category','articles.id','=','article_category.article_id')
-        ->join('categories','categories.id','=','article_category.category_id');
-      }
+      DAYOFMONTH(articles.created_at) as day'))
+      ->groupBy('articles.id','articles.title','articles.outline','articles.created_at');
 
       if($type){
-        $type == 'code' ? ($type = 0) : ($type = 1) ;
+        $type == 'code' ? ($typeCode = 0) : ($typeCode = 1) ;
         $query = $query
-        ->where('categories.type','=',$type)
-        ->groupBy('articles.id','articles.title','articles.outline','articles.created_at');
+        ->join('article_category','articles.id','=','article_category.article_id')
+        ->join('categories','categories.id','=','article_category.category_id')
+        ->where('categories.type',$typeCode);
       }
 
       if($tagId){
-        $query = $query
-        ->where('categories.id','=',$tagId);
+        if(!$type){
+          $query = $query->join('article_category','articles.id','=','article_category.article_id');
+        }
+        $query = $query->where('article_category.category_id',$tagId);
       }
 
       if($year){
         $query = $query
-        ->whereRaw('YEAR(`articles`.`created_at`) = '.$year );
+        ->where('year',$year);
       }
 
       if($searchText){
@@ -129,51 +130,47 @@ class IndexController extends Controller
           $query = $query
           ->where('articles.title','like', "%$schText%")
           ->orWhere('articles.outline','like', "%$schText%");
-        }
-        foreach($searchArr as $schText){
-          $query = $query
-          ->orwhere('articles.title','like', "%$schText%")
-          ->orWhere('articles.outline','like', "%$schText%");
+          foreach($searchArr as $schText){
+            $query = $query
+            ->orwhere('articles.title','like', "%$schText%")
+            ->orWhere('articles.outline','like', "%$schText%");
+          }
         }
       }
 
       $articles = $query->latest('articles.created_at')->skip(($page-1)*$this->itemPerPage)->take($this->itemPerPage)->get();
       foreach($articles as &$article){
-        $a = \App\Article::find($article->id);
-        $article->tags = $a->categories()->select('id','name','type')->get();
+        $article->tags = \App\Article::find($article->id)->categories()->select('id','name','type')->get();
       }
-      return response()->json($articles);
+      return $articles;
     }
     public function getPageSum(Request $request,$type=null){
       $tagId = $request->input('tagId', 0);
       $year = intval($request->input('year', 0));
 
-      $query = DB::table('articles');
-
-      if($type||$tagId){
-        $query = $query
-        ->join('article_category','articles.id','=','article_category.article_id')
-        ->join('categories','categories.id','=','article_category.category_id');
-      }
+      $query = DB::table('articles')->select('articles.id')->groupBy('articles.id');
 
       if($type){
-        $type == 'code' ? ($type = 0) : ($type = 1) ;
+        $type == 'code' ? ($typeCode = 0) : ($typeCode = 1) ;
         $query = $query
-        ->where('categories.type','=',$type)
-        ->groupBy('articles.id','articles.title','articles.outline','articles.created_at');
+        ->join('article_category','articles.id','=','article_category.article_id')
+        ->join('categories','categories.id','=','article_category.category_id')
+        ->where('categories.type',$typeCode);
       }
 
       if($tagId){
-        $query = $query
-        ->where('categories.id','=',$tagId);
+        if(!$type){
+          $query = $query->join('article_category','articles.id','=','article_category.article_id');
+        }
+        $query = $query->where('article_category.category_id',$tagId);
       }
 
       if($year){
         $query = $query
-        ->whereRaw('YEAR(`articles`.`created_at`) = '.$year );
+        ->where('year',$year);
       }
 
-      $page = intval(count($query->pluck('articles.id'))/$this->itemPerPage)+1;
-      return response()->json($page);
+      $page = intval(count($query->get())/$this->itemPerPage)+1;
+      return $page;
     }
 }

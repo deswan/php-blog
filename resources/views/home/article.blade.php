@@ -2,7 +2,7 @@
 <html lang="zh-cn">
 <head>
     <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>code -- Stephanie walk in street</title>
+    <title>{{$article->title}} - Stephanie walk in street</title>
      <link href="http://apps.bdimg.com/libs/highlight.js/9.1.0/styles/tomorrow-night.min.css" rel="stylesheet">
      <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
@@ -34,7 +34,6 @@
         <ul class="related-ul">
           @foreach($article->related as $related)
           <li class="related-li">
-            <!-- <time class="related-li-time">{{$related->year}}/{{$related->month}}/{{$related->day}}:</time> -->
             <a href="/article/{{$related->id}}" class="related-li-title">《{{$related->title}}》</a>
           </li>
           @endforeach

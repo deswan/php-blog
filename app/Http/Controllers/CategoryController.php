@@ -16,11 +16,8 @@ class CategoryController extends Controller
           }else if($val['type']===1){
             $essay[]=$val;
           }
-          unset($val['created_at']);
-          unset($val['updated_at']);
-          unset($val['type']);
         }
-        return response()->json(compact('coding','essay'));
+        return compact('coding','essay');
     }
 
     //检查名称是否重复
@@ -28,7 +25,7 @@ class CategoryController extends Controller
         $this->validate($r,[
             'name' => 'required|unique:categories,name',
         ]);
-        return response()->json([]);
+        return '';
     }
 
     //新建
@@ -38,8 +35,7 @@ class CategoryController extends Controller
             'name' => 'required|unique:categories|max:20',
             'type' => 'required|in:0,1',
         ]);
-        $m = App\Category::create(['name'=>$r->name,'type'=>$r->type]);
-        return response()->json($m);
+        return App\Category::create($r->all());
 
     }
 
@@ -51,7 +47,7 @@ class CategoryController extends Controller
         ]);
         $tag->name = $request->name;
         $tag->save();
-        return response()->json($tag);
+        return $tag;
     }
 
     //删除
@@ -59,13 +55,13 @@ class CategoryController extends Controller
     {
         $tag->delete();
         $tag->articles()->detach();
-        return response()->json('');
+        return '';
     }
 
     //显示详情
     public function show(App\Category $tag)
     {
         $articles = $tag->articles()->orderBy('updated_at','desc')->get();
-        return response()->json(compact('tag','articles'));
+        return compact('tag','articles');
     }
 }

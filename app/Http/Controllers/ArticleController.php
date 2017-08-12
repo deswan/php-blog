@@ -14,10 +14,10 @@ class ArticleController extends Controller
         //注意主页需按created_at排序
         $articles = App\Article::select('id','title','updated_at')->latest('updated_at')->get();
         foreach($articles as &$article){
-          $article['type'] = $article->categories()->first()['type'] ? 'code' : 'essay';
+          $article['type'] = $article->categories()->value('type');
           $article['tag'] = $article->categories()->select('id','name','type')->get();
         }
-        return response()->json($articles);
+        return $articles;
     }
 
     //新建
@@ -27,15 +27,11 @@ class ArticleController extends Controller
             'title'=>'required|filled|max:50',
             'coding_tags'=>'filled|array',
             'essay_tags'=>'filled|array',
-            'outline'=>'required|filled|max:100',
+            'outline'=>'max:100',
             'body'=>'required|filled'
         ]);
         DB::transaction(function () use ($request){
-          $article = new App\Article;
-          $article->title = $request->input('title');
-          $article->outline = $request->input('outline');
-          $article->body = $request->input('body');
-          $article->save();
+          $article = App\Article::create($request->all());
           if($request->input('coding_tags')){
             $tags = $request->input('coding_tags');
           }else{
@@ -45,16 +41,15 @@ class ArticleController extends Controller
             $article->categories()->attach($tag_id);
           }
         });
-        return response()->json('');
+        return '';
     }
 
     //详情
     public function show(App\Article $article)
     {
-      unset($article['created_at']);
       $article['type'] = $article->categories()->first()['type'] ? 'coding' : 'essay';
       $article['tag'] = $article->categories()->select('id','name')->get();
-      return response()->json($article);
+      return $article;
     }
 
     //编辑
@@ -64,7 +59,7 @@ class ArticleController extends Controller
       unset($article['updated_at']);
       $article['type'] = $article->categories()->first()['type'] ? 'coding' : 'essay';
       $article['tagIds'] = $article->categories()->pluck('id');
-      return response()->json($article);
+      return $article;
     }
 
     //更新
@@ -92,7 +87,7 @@ class ArticleController extends Controller
           $article->categories()->attach($tag_id);
         }
       });
-      return response()->json($article);
+      return $article;
     }
 
     //删除
@@ -100,7 +95,7 @@ class ArticleController extends Controller
     {
         $article->delete();
         $article->categories()->detach();
-        return response()->json('');
+        return '';
     }
 
     //上传文章图片

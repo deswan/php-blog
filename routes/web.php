@@ -12,22 +12,27 @@
 */
 \DB::enableQueryLog();
 
-//pages
 Route::get('/', 'IndexController@index');
+
+//适应history路由模式
 Route::get('/code', 'IndexController@index');
 Route::get('/essay', 'IndexController@index');
+
+//文章详情页
 Route::get('/article/{article}', 'IndexController@article');
 
-//api
-Route::get('/getTagsAndYears/{type?}', 'IndexController@getTagsAndYears');
-Route::get('/getArticles/{type?}', 'IndexController@getArticles');
-Route::get('/getPageSum/{type?}', 'IndexController@getPageSum');
+//ajax
+Route::get('/getTagsAndYears/{type?}', 'IndexController@getTagsAndYears');  //分类及月份数据
+Route::get('/getArticles/{type?}', 'IndexController@getArticles');  //文章列表
+Route::get('/getPageSum/{type?}', 'IndexController@getPageSum');  //总页数
 
 Route::group(['prefix'=>'admin65790'],function(){
   Route::get('/login','AdminLoginController@index')->name('login');
   Route::post('/login','AdminLoginController@login');
   Route::group(['middleware'=>'auth:admin'],function(){
     Route::get('/', 'AdminController@index');
+
+    //ajax
     Route::resource('/tags', 'CategoryController', ['only' =>
     ['index','show','store']
     ]);
