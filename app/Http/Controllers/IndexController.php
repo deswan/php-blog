@@ -10,6 +10,12 @@ class IndexController extends Controller
     public function index(){
         return view('home.index');
     }
+    public function code(){
+      return view('home.type',['type'=>'code']);
+    }
+    public function essay(){
+      return view('home.type',['type'=>'essay']);
+    }
     public function article(\App\Article $article){
         $article->type = $article->categories()->value('type') ? 'essay' : 'code';
         $article->tags = $article->categories()->select('id','name','type')->get();
@@ -74,7 +80,7 @@ class IndexController extends Controller
 
         return view('home.article',compact('article'));
     }
-    public function getTagsAndYears($type = null){
+    public function getTagsAndYears(Request $r,$type = null){
       if($type === null){
         $tags = \App\Category::has('articles')->select('id','name','type')->orderBy('updated_at','desc')->get();
         $years = DB::select('select YEAR(created_at) as  year from articles group by year order by year desc');
@@ -172,5 +178,16 @@ class IndexController extends Controller
 
       $page = intval(count($query->get())/$this->itemPerPage)+1;
       return $page;
+    }
+    public function getTypeData(Request $request,$type=null){
+      $data['articles'] = $this->getArticles($request,$type);
+      $data['tags_years'] = $this->getTagsAndYears($request,$type);
+      $data['page_sum'] = $this->getPageSum($request,$type);
+      return response()->json($data);
+    }
+    public function getIndexData(Request $request){
+      $data['articles'] = $this->getArticles($request);
+      $data['page_sum'] = $this->getPageSum($request);
+      return response()->json($data);
     }
 }

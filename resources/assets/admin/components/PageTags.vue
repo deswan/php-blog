@@ -30,6 +30,7 @@
         </div>
       </div>
     </nav>
+
     <section class="body">
       <div class="panel panel-default tag-panel">
         <div class="panel-heading">code</div>
@@ -51,20 +52,20 @@
 export default {
   data() {
     return {
-      coding: [],
+      coding: [], //渲染
       essay:[],
-      _coding: [],
+      _coding: [],  //保存全部tags
       _essay:[],
       search:'',
       addText:'',
       tagMaxLength: 20,
-      addValidated:true //for class
+      addValidated:true
     }
   },
   created(){
-    this.$http.get(this.appConfig.admin_path+'/tags').then(response => {
-      this._coding = response.body.coding || [];
-      this._essay = response.body.essay || [];
+    this.$http.get('tags').then(response => {
+      this._coding = response.body.coding;
+      this._essay = response.body.essay;
       this.coding = this._coding;
       this.essay = this._essay;
     })
@@ -72,7 +73,7 @@ export default {
   methods: {
     add(e) {
       if (!this.addValidated || this.addText.trim().length===0) return;
-      this.$http.post(this.appConfig.admin_path+'/tags',new FormData(document.forms['add-form'])).then(response => {
+      this.$http.post('tags',new FormData(document.forms['add-form'])).then(response => {
         this.addText = '';
         if(response.body.type==0){
           this._coding.unshift(response.body);
@@ -90,7 +91,7 @@ export default {
   },
   watch:{
     search(text){
-      if(!(text = text.trim())){
+      if(!(text = text.trim())){  //清空过滤
         this.coding = this._coding;
         this.essay = this._essay;
       }else{

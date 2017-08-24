@@ -1,0 +1,29 @@
+$red:rgb(183,89,80);
+$black:#3c3d3d;
+$secondary-color:#9e9e9e;
+$brown:#616161;
+$bg:#f2f2f2;
+$aside-width:100px;
+
+//bootstrap
+$icon-font-path:"~bootstrap-sass/assets/fonts/bootstrap/";
+
+$brand-primary: $brown;
+$btn-primary-color:whitesmoke;
+$brand-default: white;
+$btn-default-color:$brown;
+
+$body-bg:$bg;
+$text-color:$brown;
+
+$panel-heading-padding:15px 15px;
+$panel-default-heading-bg:whitesmoke;
+
+$nav-link-hover-bg:grey;
+
+@mixin t-shadow{
+  text-shadow: 2px 2px #e0e0e0;
+}
+@mixin content-box{
+  padding:0 30px;
+}

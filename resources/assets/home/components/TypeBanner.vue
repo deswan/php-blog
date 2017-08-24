@@ -21,7 +21,7 @@
 <script>
 //click-->triggerRoute(newData)-->changeData-->render
 export default {
-  props:['type'],
+  props:['type','tags_years'],
   data(){
     return {
       logo:'',
@@ -33,10 +33,8 @@ export default {
     };
   },
   created(){
-    this.$http.get('/getTagsAndYears/'+this.type).then(response => {
-      this.tags = response.body.tags;
-      this.years = response.body.years;
-    })
+    this.tags = this.tags_years.tags;
+    this.years = this.tags_years.years;
     this.logo = this.type=='code' ? require('img/code.png') : require('img/essay.png');
     this.activeTagId = this.$route.query.tagId || 0;
     this.activeYear = this.$route.query.year || 0;
@@ -46,7 +44,7 @@ export default {
       var params = {};
       obj.tagId && (params.tagId = obj.tagId);
       obj.year && (params.year = obj.year);
-      this.$router.push({name:this.type,query:params});
+      this.$router.push({query:params});
     },
     clickTag(tagId){
       this.triggerRoute({tagId:tagId,year:this.activeYear})
@@ -62,6 +60,10 @@ export default {
     },
     search(search){
       this.$emit('search',search.trim());
+    },
+    tags_years(){
+      this.tags = this.tags_years.tags;
+      this.years = this.tags_years.years;
     }
   }
 }

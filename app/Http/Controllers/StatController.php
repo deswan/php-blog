@@ -28,14 +28,14 @@ class StatController extends Controller
           $data[] = isset($result[$i]) ? $result[$i] : 0 ;
         }
       }else{  // exp. 2017/1
-        $query = $query->select(DB::raw('DAYOFMONTH(time) as time$1,count(*) as count'))
+        $query = $query->select(DB::raw('DAYOFMONTH(time) as time1,count(*) as count'))
           ->whereRaw('YEAR(time) = '.$year)
           ->whereRaw('MONTH(time) = '.$month);
         $result = $query->get()->toArray();
         foreach($result as $k=>$v){
           $result[$k] = (array)$v;
         }
-        $result = array_column($result,'count','time$1');
+        $result = array_column($result,'count','time1');
         $t = date('t',strtotime("$year-$month-1")); //当月总天数
         for($i=1;$i<=$t;$i++){
           $data[] = isset($result[$i]) ? $result[$i] : 0 ;

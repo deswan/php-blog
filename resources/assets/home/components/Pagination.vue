@@ -13,6 +13,9 @@ export default {
     type:{
       type:String,
       default:''
+    },
+    page_sum:{
+      type:Number
     }
   },
   data() {
@@ -23,7 +26,6 @@ export default {
   },
   created(){
     this.page = this.$route.query.page || 1;  //初始化当前页数
-    this.fetch();
   },
   methods:{
     triggerRoute(page){
@@ -49,6 +51,9 @@ export default {
         this.fetch();
       }
       this.page = to.query.page || 1;
+    },
+    page_sum(to){
+      this.pageSum = to;
     }
   }
 }

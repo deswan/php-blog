@@ -1,6 +1,4 @@
 
-window._ = require('lodash');
-
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
  * for JavaScript based Bootstrap feature such as modals and tabs. This
@@ -18,7 +16,6 @@ require('jquery.scrollTo');
 
 window.Vue = require('vue');
 require('vue-resource');  //automatically install
-Vue.http.options.emulateJSON = true;
 /**
  * We'll register a HTTP interceptor to attach the "CSRF" header to each of
  * the outgoing requests issued by this application. The CSRF middleware
@@ -27,11 +24,8 @@ Vue.http.options.emulateJSON = true;
 
 Vue.http.interceptors.push((request, next) => {
     request.headers.set('X-CSRF-TOKEN', Laravel.csrfToken);
-
     next();
 });
-
-require('normalize.css/normalize.css');
 
 
 /**

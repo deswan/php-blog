@@ -11,15 +11,13 @@
 <my-header :disable-router="true"></my-header>
 <section id="main">
   <article id="article" style="visibility:hidden">
-
-    <div class="article-tags">
-      <img class="article-type-logo">
-      @foreach($article->tags as $tag)
-      <a href="/{{$tag->type ? 'essay' : 'code'}}?tagId={{$tag->id}}" class="badge {{$tag->type ? 'essay' : 'code'}}">{{$tag->name}}</a>
-      @endforeach
-    </div>
-
     <header>
+      <div class="article-tags">
+        <img class="article-type-logo">
+        @foreach($article->tags as $tag)
+        <a href="/{{$tag->type ? 'essay' : 'code'}}?tagId={{$tag->id}}" class="badge {{$tag->type ? 'essay' : 'code'}}">{{$tag->name}}</a>
+        @endforeach
+      </div>
       <h1 class="article-h1">
         <span class="article-title">{{$article->title}}</span>
       </h1>
@@ -48,14 +46,14 @@
   <section id="shift-article" style="visibility:hidden">
     @if(isset($article->last))
     <a class="shift-article-item last" href="/article/{{$article->last->id}}">
-      <i class="fa fa-chevron-left shift-logo" aria-hidden="true"></i>
+      <i class="fa fa-angle-left shift-logo" aria-hidden="true"></i>
       <span class="shift-title">{{$article->last->title}}</span>
     </a>
     @endif
     @if(isset($article->next))
     <a class="shift-article-item next" href="/article/{{$article->next->id}}">
       <span class="shift-title">{{$article->next->title}}</span>
-      <i class="fa fa-chevron-right shift-logo" aria-hidden="true"></i>
+      <i class="fa fa-angle-right shift-logo" aria-hidden="true"></i>
     </a>
     @endif
   </section>

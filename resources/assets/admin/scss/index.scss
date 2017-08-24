@@ -1,31 +1,18 @@
-$icon-font-path:"~bootstrap-sass/assets/fonts/bootstrap/";
-
-$text-color:#616161;
-$link-color:$text-color;
-
-$brand-primary: $text-color;
-$btn-primary-color:whitesmoke;
-$brand-default: white;
-$btn-default-color:$text-color;
-
+@import "./var";
 @import "~bootstrap-sass/assets/stylesheets/_bootstrap.scss";
 a:hover{
   cursor: pointer;
-}
-body{
-  background-color: #f2f2f2;
 }
 li {
   list-style-type: none;
 }
 #aside{
   position: fixed;
-  z-index:9999;
+  z-index:2000;
   top:0;
   left:0;
-  width:100px;
+  width:$aside-width;
   height: 100%;
-  padding: 0;
   background-color: $brand-primary;
   text-align: center;
 }
@@ -34,18 +21,20 @@ li {
   width: 30%;
 }
 #aside li a{
-  padding-top: 20px;
-  padding-bottom: 20px;
+  display: table-cell;
+  transition: all .3s;
+  width:$aside-width;
+  height: 80px;
+  vertical-align: middle;
   color:$btn-primary-color;
+  font-size: 16px;
 }
-#aside li a:hover{
-  color:$brand-primary;
+#aside .router-link-active{
+  background:$bg;
+  color:$brown;
 }
 #main{
-  padding-left: 100px;
-}
-.body{
-  padding: 0 30px;
+  padding-left: $aside-width;
 }
 .transition-success{
   animation:transition-success 2s ease;
@@ -55,6 +44,6 @@ li {
     background-color: $brand-success;
   }
 }
-.btn:focus, .btn.focus, .btn:active:focus, .btn:active.focus, .btn.active:focus, .btn.active.focus {
+.btn:focus, .btn:active, .btn.active {
     outline:none;
 }

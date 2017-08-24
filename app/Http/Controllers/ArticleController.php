@@ -47,7 +47,7 @@ class ArticleController extends Controller
     //详情
     public function show(App\Article $article)
     {
-      $article['type'] = $article->categories()->first()['type'] ? 'coding' : 'essay';
+      $article['type'] = $article->categories()->first()['type'] ? 'essay' : 'code';
       $article['tag'] = $article->categories()->select('id','name')->get();
       return $article;
     }
@@ -57,7 +57,7 @@ class ArticleController extends Controller
     {
       unset($article['created_at']);
       unset($article['updated_at']);
-      $article['type'] = $article->categories()->first()['type'] ? 'coding' : 'essay';
+      $article['type'] = $article->categories()->first()['type'] ? 'essay' : 'code';
       $article['tagIds'] = $article->categories()->pluck('id');
       return $article;
     }

@@ -1,10 +1,10 @@
 <template>
-  <div id="articles" class="body">
+  <div id="articles">
       <table class="table">
           <thead>
           <tr>
-              <th>date</th>
-              <th>title</th>
+              <th>最后修改日期</th>
+              <th>标题</th>
               <th>tag</th>
               <th></th>
           </tr>
@@ -37,12 +37,15 @@ export default {
     }
   },
   created(){
-    this.$http.get(this.appConfig.admin_path+'/articles').then(response => {
+    this.$http.get('articles').then(response => {
         this.articles = response.body;
     })
   }
 }
 </script>
 <style scoped lang="scss">
-
+@import "../scss/var";
+#articles{
+  @include content-box;
+}
 </style>

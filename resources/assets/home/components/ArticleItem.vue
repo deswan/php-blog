@@ -6,9 +6,9 @@
       <span class="year">{{article.year}}</span>
     </time>
   </div>
-  <h4 class="a-item-title">
-    <a :href="'/article/'+article.id" class="title">{{article.title}}</a>
-    <router-link class="badge" :class="tag.type ? 'essay' : 'code'" :key="tag.id" :to="{name : article.type ,query:{tagId:tag.id}}" v-for="tag in article.tags">{{tag.name}}</router-link>
+  <h4 class="a-item-title-group">
+    <a :href="'/article/'+article.id" class="a-item-title">{{article.title}}</a>
+    <a class="badge" :class="tag.type ? 'essay' : 'code'" :href="(tag.type ? '/essay?tagId=' : '/code?tagId=')+tag.id" v-for="tag in article.tags">{{tag.name}}</a>
   </h4>
   <p class="a-item-outline">
     {{article.outline}}
@@ -25,35 +25,37 @@ export default {
   }
 }
 </script>
-<style scoped lang="scss">
+<style lang="scss">
 @import '../scss/myvar';
 .a-item {
+    position: relative;
     background-color: white;
     padding: 25px 40px 20px 60px;
-    position: relative;
-    font-size: 16px;
     text-align: left;
     box-shadow: 0 0 30px lightgrey;
 }
-.a-item-title {
-    vertical-align: middle;
-    text-align: left;
+.a-item-title-group {
     line-height: 30px;
 }
+.a-item-title{
+  @include t-shadow;
+  color:$brown;
+  font-size: 26px;
+  font-weight: bold;
+  vertical-align: middle;
+}
 .a-item-date {
-  font-family: "Hiragino Sans GB", "Microsoft YaHei",
-  "WenQuanYi Micro Hei", sans-serif;
-    box-sizing: border-box;
+    font-family: "Hiragino Sans GB", "Microsoft YaHei","WenQuanYi Micro Hei", sans-serif;
     position: absolute;
+    box-sizing: border-box;
     top: 20px;
     left: -35px;
     width: 70px;
     height: 70px;
-    padding-top: 20px;
+    padding-top: 18px;
     border-radius: 50%;
     background-color: $brown;
     color: white;
-    opacity: 1;
     text-align: center;
     line-height: 1.2;
     transition:all .5s ease-in-out;
@@ -67,11 +69,12 @@ export default {
     font-size: 12px;
 }
 .a-item-date-inner {
+    color: $brown;
     font-size: 12px;
     margin: 5px 0;
     display: none;
 }
-@media only screen and (max-width:720px){
+@media only screen and (max-width:$media-width){
     .a-item{
       padding-left: 20px;
     }
@@ -84,7 +87,7 @@ export default {
     }
 }
 .a-item-outline {
-    color:grey;
+    color:$brown;
     font-weight: normal;
     font-size: 16px;
     margin-top:10px;

@@ -1,5 +1,5 @@
 <template>
-<section id="article-section">
+<section id="article-list-wrapper">
   <ul class="a-list">
       <li is="article-item" class="article-item" :article="article" v-for="article in articles" :key="article.id"></li>
   </ul>
@@ -16,8 +16,10 @@ export default {
       default:''
     },
     search:{
-      type:String,
-      default:''
+      type:String
+    },
+    articles_1:{
+      type:Array
     }
   },
   data() {
@@ -26,7 +28,7 @@ export default {
     }
   },
   created(){
-    this.fetch();
+    this.articles = this.articles_1;
   },
   components: {
     'article-item': articleItem
@@ -54,16 +56,18 @@ export default {
     },
     search(){
       this.fetch();
+    },
+    articles_1(){
+      this.articles = this.articles_1;
     }
   }
 }
 </script>
-<style scoped lang="scss">
-#article-section {
-    width: 98%;
+<style lang="scss">
+@import "../scss/myvar";
+#article-list-wrapper {
     padding-left: 2%;
-    @media screen and (max-width:720px) {
-        width: 100%;
+    @media screen and (max-width:$media-width) {
         padding-left: 0;
     }
 }
@@ -72,13 +76,13 @@ export default {
     margin: 0 auto;
     width: 1000px;
     max-width: 90%;
-    @media screen and (max-width:720px) {
+    @media screen and (max-width:$media-width) {
         max-width: 100%;
     }
 }
 .article-item{
-  margin-bottom: 20px;
-  @media screen and (max-width:720px) {
+  margin-bottom: 30px;
+  @media screen and (max-width:$media-width) {
       margin-bottom: 5px;
   }
 }

@@ -1,10 +1,10 @@
 <template>
-  <div id="drafts" class="body">
+  <div id="drafts">
       <table class="table">
           <thead>
           <tr>
               <th>最近修改时间</th>
-              <th>title</th>
+              <th>标题</th>
               <th></th>
           </tr>
           </thead>
@@ -20,7 +20,7 @@
           </tr>
           </tbody>
       </table>
-      <pop-model :arg="arg" @confirm="del$1" ref="modal" confirm-btn-text="删除">确定删除 {{arg && (arg.title || '未标题')}} 草稿吗？</pop-model>
+      <pop-model :confirmArg="arg" @confirm="del$1" :showModal="showModal" confirm-btn-text="删除">确定删除草稿 <strong>{{arg && (arg.title || '未标题')}}</strong> 吗？</pop-model>
   </div>
 </template>
 
@@ -28,27 +28,33 @@
 export default {
   data(){
     return{
+      showModal:false,
       arg:null,
       drafts:[]
     }
   },
   created(){
-    this.$http.get(this.appConfig.admin_path+'/drafts').then(response => {
+    this.$http.get('drafts').then(response => {
       this.drafts = response.body;
     })
   },
   methods:{
     del$1(draft){
-      this.$http.get(this.appConfig.admin_path+'/drafts/'+draft.id+'/delete').then(response => {
+      this.$http.get('drafts/'+draft.id+'/delete').then(response => {
         this.drafts.splice(this.drafts.indexOf(draft),1);
+        this.showModal = false;
       })
     },
     del(draft){
       this.arg = draft;
-      this.$refs.modal.show();
+      this.showModal = true;
     }
   }
 }
 </script>
 <style scoped lang="scss">
+@import "../scss/var";
+#drafts{
+  @include content-box;
+}
 </style>

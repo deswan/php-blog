@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 281);
+/******/ 	return __webpack_require__(__webpack_require__.s = 282);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -10386,7 +10386,7 @@ return jQuery;
 
 /***/ }),
 
-/***/ 129:
+/***/ 130:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -10399,8 +10399,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_Header___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__components_Header__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_Footer__ = __webpack_require__(45);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_Footer___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__components_Footer__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_Banner__ = __webpack_require__(59);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_Banner___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__components_Banner__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_TypeBanner__ = __webpack_require__(60);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_TypeBanner___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__components_TypeBanner__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_ArticleList__ = __webpack_require__(44);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_ArticleList___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__components_ArticleList__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_Pagination__ = __webpack_require__(47);
@@ -10415,24 +10415,27 @@ __webpack_require__(19);
 
 
 
-var home = new Vue({
+var type = new Vue({
   el: '#app',
   router: __WEBPACK_IMPORTED_MODULE_7__router__["a" /* default */],
   data: {
+    searchText: '',
+    tags_years: {},
     articles: [],
     page_sum: 1
   },
   components: {
     'my-header': __WEBPACK_IMPORTED_MODULE_2__components_Header___default.a,
     'my-footer': __WEBPACK_IMPORTED_MODULE_3__components_Footer___default.a,
-    'banner': __WEBPACK_IMPORTED_MODULE_4__components_Banner___default.a,
+    'type-banner': __WEBPACK_IMPORTED_MODULE_4__components_TypeBanner___default.a,
     'article-list': __WEBPACK_IMPORTED_MODULE_5__components_ArticleList___default.a,
     'pagination': __WEBPACK_IMPORTED_MODULE_6__components_Pagination___default.a
   },
   created: function created() {
     var _this = this;
 
-    this.$http.get('/getIndexData').then(function (response) {
+    this.$http.get('/getTypeData/' + window.mytype).then(function (response) {
+      _this.tags_years = response.body.tags_years;
       _this.articles = response.body.articles;
       _this.page_sum = response.body.page_sum;
     });
@@ -10843,10 +10846,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /***/ }),
 
-/***/ 281:
+/***/ 282:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(129);
+module.exports = __webpack_require__(130);
 
 
 /***/ }),

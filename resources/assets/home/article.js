@@ -1,4 +1,5 @@
 import '@/app';
+require('normalize.css/normalize.css');
 import './scss/article.scss';
 import Header from './components/Header';
 import Footer from './components/Footer';

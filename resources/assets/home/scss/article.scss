@@ -1,12 +1,9 @@
 @import "home.scss";
-body{
-  background: $bg;
-}
 #article{
     visibility: visible !important;
     box-sizing: border-box;
     background-color: white;
-    width: 1100px;
+    width: 1000px;
     max-width: 98%;
     margin: 20px auto 50px;
     padding: 30px 50px;
@@ -22,13 +19,16 @@ body{
     color:$brown;
     @include t-shadow;
   }
+  &-h1{
+    margin-bottom: 10px;
+  }
   &-time{
-    font-size: 14px;
     color:grey;
+    font-size: 14px;
     font-weight: normal;
   }
   &-footer{
-    border-top: dashed whitesmoke 2px;
+    border-top: dashed lightgrey 2px;
     padding: 30px 0 60px;
   }
   &-body{
@@ -113,6 +113,7 @@ body{
     margin:10px 0;
   }
   &-li-title{
+    color:$brown;
     font-size: 18px;
     @include t-shadow;
   }
@@ -129,7 +130,7 @@ blockquote{
 #shift-article{
   visibility: visible !important;  //解决css未加载时的闪屏问题
   width:95%;
-  max-width:800px;
+  max-width:1000px;
   margin:0 auto;
   @media screen and (max-width:720px){
     width: 95%;
@@ -142,42 +143,34 @@ blockquote{
 }
 
 .shift-article-item{
-  &.last{
-    float: left;
-    .shift-logo{
-      margin-right: 10px;
-    }
-  }
+  transition: background-color .3s ;
+  box-sizing: border-box;
+  width: 50%;
+  line-height: 50px;
+  float: left;
+  color: grey;
+
   &.next{
     float: right;
-    .shift-logo{
-      margin-left: 10px;
-    }
+    text-align: right;
   }
+
   &:hover{
-    .shift-logo{
-      background: $brown;
-    }
-    .shift-title{
-      color:$brown;
-    }
+    background: lightgrey;
+    color: $brown;
   }
 }
 .shift-title{
-  transition: color .5s ;
-  color:grey;
+  transition: color .3s ;
 }
 .shift-logo{
-  transition: background-color .3s ;
+  transition: color .3s ;
   display: inline-block;
   width: 40px;
-  height: 40px;
-  line-height: 40px;
-  font-size: 20px;
-  border-radius: 20px;
-  background: grey;
-  color:whitesmoke;
+  font-size: 25px;
+  margin-top: -2px;  //offset bug fixed
   text-align: center;
+  vertical-align: middle;
 }
 .article-type-logo{
   vertical-align: middle;

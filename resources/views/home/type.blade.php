@@ -7,19 +7,20 @@
 </head>
 <body>
 <div id="app">
-    <my-header></my-header>
+  <my-header></my-header>
 <main id="main">
-<banner></banner>
-<article-list :articles_1="articles"></article-list>
-<pagination :page_sum="page_sum"></pagination>
+  <type-banner type="{{$type}}" @search="searchText = $event" :tags_years="tags_years"></type-banner>
+  <article-list type="{{$type}}" :search="searchText" :articles_1="articles"></article-list>
+  <pagination type="{{$type}}" v-show="!searchText" :page_sum="page_sum"></pagination>
 </main>
-<my-footer></my-footer>
+  <my-footer></my-footer>
 </div>
 <script>
     window.Laravel = <?php echo json_encode([
         'csrfToken' => csrf_token(),
-    ]); ?>
+    ]); ?>;
+    window.mytype = "<?php echo $type; ?>";
 </script>
-<script src="/js/home.js"></script>
+<script src="/js/type.js"></script>
 </body>
 </html>

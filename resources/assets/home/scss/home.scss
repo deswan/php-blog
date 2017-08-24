@@ -28,8 +28,8 @@ a {
 }
 
 #main {
-  padding-top: 52px;
-  min-height: calc(100vh - 52px - 150px);
+  padding-top: $header-height;
+  min-height: calc(100vh - #{$header-height} - 150px);
 }
 #footer{
   margin-top:50px;
@@ -45,7 +45,7 @@ a {
   padding: 2px 12px;
   border-radius: 5px;
 
-  font-size:14px;
+  font-size:15px;
   vertical-align: middle;
   background-color: $bg;
   color:$black;
@@ -53,13 +53,6 @@ a {
 .badge.code{
   background-color: $brown;
   color:$bg;
-}
-.title{
-  @include t-shadow;
-  color:$brown;
-  font-size: 25px;
-  font-weight: bold;
-  vertical-align: middle;
 }
 .fade-enter-active, .fade-leave-active {
   transition: opacity .2s

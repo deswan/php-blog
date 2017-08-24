@@ -13,5 +13,6 @@
   "/js/admin.js.map": "/js/admin.js.map",
   "/js/home.js.map": "/js/home.js.map",
   "/js/article.js.map": "/js/article.js.map",
-  "/js/login.js.map": "/js/login.js.map"
+  "/js/login.js.map": "/js/login.js.map",
+  "/js/type.js": "/js/type.js"
 }

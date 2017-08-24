@@ -14,14 +14,16 @@
 
 Route::get('/', 'IndexController@index');
 
-//适应history路由模式
-Route::get('/code', 'IndexController@index');
-Route::get('/essay', 'IndexController@index');
+Route::get('/code', 'IndexController@code');
+Route::get('/essay', 'IndexController@essay');
 
 //文章详情页
 Route::get('/article/{article}', 'IndexController@article');
 
 //ajax
+Route::get('/getTypeData/{type?}', 'IndexController@getTypeData');
+Route::get('/getIndexData', 'IndexController@getIndexData');
+
 Route::get('/getTagsAndYears/{type?}', 'IndexController@getTagsAndYears');  //分类及月份数据
 Route::get('/getArticles/{type?}', 'IndexController@getArticles');  //文章列表
 Route::get('/getPageSum/{type?}', 'IndexController@getPageSum');  //总页数

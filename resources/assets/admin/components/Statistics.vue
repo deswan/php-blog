@@ -1,11 +1,11 @@
 <template>
 <section id="chart-board">
-  <button class="btn btn-default" id="back" type="submit" @click="back" v-show="state=='month'">&larr; 2017</button>
+  <button class="btn btn-default" id="back" type="submit" @click="back" v-show="month">&larr; 2017</button>
   <section id="chart"></section>
   <nav aria-label="...">
     <ul class="pager">
-      <li class="previous" v-show="state=='year' ? year>2017 : month>1"><a href="#" @click="state=='year' ? year-- : month-- "><span aria-hidden="true">&larr;</span> {{state=='year' ? '上一年' : '上个月'}}</a></li>
-      <li class="next"  v-show="state=='year' ? year<nowYear : month<12"><a href="#"  @click="state=='year' ? year++ : month++ ">{{state=='year' ? '下一年' : '下个月'}} <span aria-hidden="true">&rarr;</span></a></li>
+      <li class="previous" v-show="!month ? year>2017 : month>1"><a href="#" @click="!month ? year-- : month-- "><span aria-hidden="true">&larr;</span> {{!month ? '上一年' : '上个月'}}</a></li>
+      <li class="next"  v-show="!month ? year<nowYear : month<12"><a href="#"  @click="!month ? year++ : month++ ">{{!month ? '下一年' : '下个月'}} <span aria-hidden="true">&rarr;</span></a></li>
     </ul>
   </nav>
 
@@ -13,11 +13,11 @@
 </template>
 
 <script>
-// 引入 ECharts 主模块
+//  ECharts 主模块
 var echarts = require('echarts/lib/echarts');
-// 引入柱状图
+// 柱状图
 require('echarts/lib/chart/bar');
-// 引入提示框和标题组件
+// 提示框和标题组件
 require('echarts/lib/component/tooltip');
 require('echarts/lib/component/title');
 
@@ -54,11 +54,9 @@ export default {
           data: []
         }]
       },
-      year: 2017,
-      month: null,
-      state: 'year',
-      nowYear:0,
-      firstFlush:true
+      year: 0,
+      month: 0,
+      nowYear:0
     }
   },
   computed: {
@@ -68,8 +66,7 @@ export default {
   },
   methods: {
     back(){ //返回年
-      this.month = null;
-      this.state = 'year';
+      this.month = 0;
     },
     flush() {
       var url = '/stat/getData';
@@ -77,11 +74,11 @@ export default {
       this.articleId && ( url += '/' + this.articleId );
       this.year && (params.year = this.year);
       this.month && (params.month = this.month);
-      this.$http.get(url,{params:params}).then(response => {
+      this.$http.get(url,{params}).then(response => {
         var result = response.body;
         this.nowYear = result.nowYear;
         this.year = result.year;
-        this.month = result.month || null;
+        this.month = result.month || 0;
 
         //刷新轴
         this.option.xAxis.data = [];
@@ -95,7 +92,7 @@ export default {
           }
         }
 
-        //刷新options
+        //渲染图表
         this.option.series[0].data = result.data;
         this.option.title.subtext = '共' + result.sum + '次';
         this.option.title.text = this.title;
@@ -110,29 +107,22 @@ export default {
       this.option.xAxis.data[i] = (i + 1) + '月';
       this.option.series[0].data[i] = 0;
     }
-    this.flush();
   },
   mounted() {
     this.chart = echarts.init(document.getElementById('chart'));
-
-    //如果此时ajax还未返回则是对chart初始化,已返回则无任何变化
-    this.chart.setOption(this.option);
+    this.flush();
     this.chart.on('click', params => {
-      if(this.state=='year'){
+      if(!this.month){
         this.month = params.dataIndex + 1
-        this.state = 'month'
       }
     })
   },
   watch: {
-    year() {
+    year(newYear,old) {
+      if(!old){ return; } //初始化时year==0
       this.flush();
     },
     month(newMonth,old) {
-      if(old === null) return;  //从年点进月时不刷新（state的变化会刷新）
-      this.flush();
-    },
-    state() {
       this.flush();
     }
   }
@@ -142,11 +132,10 @@ export default {
 #chart-board {
     width: 900px;
     height: 600px;
-    margin: 30px auto;
+    margin: 0 auto;
 }
 #chart {
-    width: 900px;
-    height: 500px;
+    height: 100%;
 }
 #back{
   position:absolute;
